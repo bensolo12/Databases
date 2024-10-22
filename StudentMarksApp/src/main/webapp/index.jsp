@@ -124,17 +124,17 @@
   <div class="login-popup" id="loginPopup">
     <div class="login-box">
       <h3>Sign In</h3>
-      <form action="#">
+      <form action="${pageContext.request.contextPath}/login-servlet" method ="post">
         <label for="user-id">User ID</label>
         <input type="text" id="user-id" name="user-id" placeholder="18263">
 
         <label for="password">Password</label>
         <input type="password" id="password" name="password" placeholder="********">
 
-        <a href="login-servlet">Sign in</a>
+        <input type="submit" value="Sign in">
       </form>
       <a href="#">Forgot Password?</a>
-      <a href="#">Sign Up</a>
+      <a href="registration.jsp">Sign Up</a>
       <!-- Button to close the login pop-up -->
       <button onclick="closeLogin()">Close</button>
     </div>

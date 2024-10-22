@@ -41,6 +41,8 @@
           <artifactId>mongodb-driver</artifactId>
           <version>3.12.6</version>
       </dependency>
+
+
   </dependencies>
 
   <build>
