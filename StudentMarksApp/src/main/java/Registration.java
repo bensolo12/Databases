@@ -23,8 +23,8 @@ public class Registration extends HttpServlet {
         PrintWriter out = response.getWriter();
         out.println("Processing user registration ........");
         Document customer = new Document()
-                .append("FName", request.getParameter("fname"))
-                .append("LName", request.getParameter("lname"));
+                .append("First_name", request.getParameter("First_name"))
+                .append("Second_name", request.getParameter("Second_name"));
         createCustomer(customer);
     }
 
