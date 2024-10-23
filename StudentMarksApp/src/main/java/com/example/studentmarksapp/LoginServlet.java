@@ -23,6 +23,7 @@ public class LoginServlet extends HttpServlet {
         response.setContentType("text/html");
         String username = request.getParameter("user-id");
         String password = request.getParameter("password");
+        String dbType = request.getParameter("toggle-switch");
         if (checkLogin(username, password))
         {
             PrintWriter out = response.getWriter();
