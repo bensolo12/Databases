@@ -181,10 +181,9 @@
     <div class="grid-item">Equipment Hire</div>
   </div>
 
+
   <!-- Button to open the login pop-up -->
   <button class="login-button" onclick="openLogin()">Login</button>
-
-
 
   <!-- The login pop-up -->
   <div class="login-popup" id="loginPopup">
@@ -192,9 +191,8 @@
       <h3>Sign In</h3>
       <form action="${pageContext.request.contextPath}/login-servlet" method ="post">
         <label for="toggle-switch" class="switch">
-          <input type="checkbox" id="toggle-switch">
+          <input type="checkbox" id="toggle-switch" name="toggle-switch" value="checked">
           <span class="slider round"></span>
-          MongoDB
         </label>
         <label for="user-id">User ID</label>
         <input type="text" id="user-id" name="user-id" placeholder="18263">

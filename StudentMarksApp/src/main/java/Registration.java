@@ -1,3 +1,4 @@
+import com.example.studentmarksapp.DBScripts;
 import com.mongodb.client.*;
 
 import org.bson.Document;
@@ -8,6 +9,7 @@ import jakarta.servlet.annotation.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.*;
 
 import static com.mongodb.client.model.Projections.fields;
 import static com.mongodb.client.model.Projections.include;
@@ -25,20 +27,46 @@ public class Registration extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html");
 
+        //String userID = request.getParameter("userID");
+        String first_name = request.getParameter("First_Name");
+        String second_name = request.getParameter("Second_Name");
+        String password = request.getParameter("Password");
+        String DOB = request.getParameter("DOB");
+
         PrintWriter out = response.getWriter();
         out.println("Processing user registration ........");
         Document customer = new Document()
                 .append("user_id", getUserID())
-                .append("First_name", request.getParameter("First_name"))
-                .append("Password", request.getParameter("Password"));
-        createCustomer(customer);
+                .append("First_name", first_name)
+                .append("Password", password);
+        //createUserMongo(customer);
+        try {
+            createUserSQL(first_name, second_name, password, DOB);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void createCustomer(Document customer) {
+    public void createUserMongo(Document customer) {
         MongoClient mongo = MongoClients.create();
         MongoDatabase database = mongo.getDatabase("StudentMarks");
         MongoCollection collection = database.getCollection("Users");
         collection.insertOne(customer);
+    }
+
+    public void createUserSQL(String firstName, String secondName, String password, String DOB) throws SQLException {
+        DBScripts db = new DBScripts();
+        if (!db.checkIfTableExists()) db.createTable();
+
+        //Enter Registration info into user table
+        String enterUserSQL = "INSERT INTO Users (First_name, Second_name, DOB, Password) VALUES ("+ firstName + ", " + secondName + ", " + DOB + ", " + password+")";
+        try (Connection connection = db.ConnectDB();
+        Statement statement = connection.createStatement();) {
+            statement.execute(enterUserSQL);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public int getUserID() {
