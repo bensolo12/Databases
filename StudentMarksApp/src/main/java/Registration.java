@@ -14,7 +14,6 @@ import java.sql.*;
 import static com.mongodb.client.model.Projections.fields;
 import static com.mongodb.client.model.Projections.include;
 import static com.mongodb.client.model.Sorts.descending;
-import static java.util.Collections.sort;
 
 @WebServlet(name = "Registration", value = "/registration")
 public class Registration extends HttpServlet {
@@ -59,14 +58,18 @@ public class Registration extends HttpServlet {
         if (!db.checkIfTableExists()) db.createTable();
 
         //Enter Registration info into user table
-        String enterUserSQL = "INSERT INTO Users (First_name, Second_name, DOB, Password) VALUES ("+ firstName + ", " + secondName + ", " + DOB + ", " + password+")";
+        String enterUserSQL = "INSERT INTO Users (USER_ID, FIRST_NAME ,Second_name, DOB, Password) VALUES (?, ?, ?, ?, ?)";
         try (Connection connection = db.ConnectDB();
-        Statement statement = connection.createStatement();) {
-            statement.execute(enterUserSQL);
+             PreparedStatement preparedStatement = connection.prepareStatement(enterUserSQL)) {
+            preparedStatement.setInt(1, 1);
+            preparedStatement.setString(2, firstName);
+            preparedStatement.setString(3, secondName);
+            preparedStatement.setDate(4, Date.valueOf(DOB)); // Assuming `DOB` is a `String` in `yyyy-mm-dd` format
+            preparedStatement.setString(5, password);
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
     }
 
     public int getUserID() {
