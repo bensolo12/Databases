@@ -1,4 +1,5 @@
-import com.example.studentmarksapp.DBScripts;
+package com.example.studentmarksapp;
+
 import com.mongodb.client.*;
 
 import org.bson.Document;
@@ -25,6 +26,8 @@ public class Registration extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html");
+        SliderValueServlet slider = new SliderValueServlet();
+        DBType dbType = slider.getDbType();
 
         //String userID = request.getParameter("userID");
         String first_name = request.getParameter("First_Name");
@@ -34,15 +37,18 @@ public class Registration extends HttpServlet {
 
         PrintWriter out = response.getWriter();
         out.println("Processing user registration ........");
-        Document customer = new Document()
+        Document user = new Document()
                 .append("user_id", getUserID())
                 .append("First_name", first_name)
                 .append("Password", password);
-        //createUserMongo(customer);
-        try {
-            createUserSQL(first_name, second_name, password, DOB);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        if (dbType == DBType.MONGO) {
+            createUserMongo(user);
+        } else {
+            try {
+                createUserSQL(first_name, second_name, password, DOB);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
