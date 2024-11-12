@@ -1,9 +1,6 @@
 package com.example.studentmarksapp;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class DBScripts {
     public Connection ConnectDB() {
@@ -52,6 +49,22 @@ public class DBScripts {
             statement.execute(createTableSQL);
             statement.execute(createSequenceSQL);
             statement.execute(createTriggerSQL);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String checkUserType(String username) {
+        String checkUserTypeSQL = "SELECT USER_ID FROM Users WHERE FIRST_NAME = ?";
+        try (Connection connection = ConnectDB();
+             PreparedStatement preparedStatement = connection.prepareStatement(checkUserTypeSQL)) {
+            preparedStatement.setString(1, username);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString("USER_ID");
+            } else {
+                return null;
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

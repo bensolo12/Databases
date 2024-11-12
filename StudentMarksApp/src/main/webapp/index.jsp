@@ -128,9 +128,9 @@
     <div class="grid-item">Equipment Hire</div>
   </div>
 
-  <form action="index.jsp" method="post">
+<%--  <form action="index.jsp" method="post">
     <button class="DBSwitch-button" id="DBSwitch-button" onclick="toggleLabel()">Switch to SQL</button>
-  </form>
+  </form>--%>
 
   <button class="login-button" onclick="openLogin()">Login</button>
 
@@ -148,7 +148,6 @@
       </form>
       <a href="#">Forgot Password?</a>
       <a href="registration.jsp">Sign Up</a>
-      <!-- Button to close the login pop-up -->
       <button onclick="closeLogin()">Close</button>
     </div>
   </div>

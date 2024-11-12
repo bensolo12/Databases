@@ -5,6 +5,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import java.sql.Connection;
@@ -16,6 +17,10 @@ import static com.mongodb.client.model.Filters.eq;
 
 enum DBType {
     MONGO, SQL
+}
+
+enum UserType {
+    STUDENT, TEACHER, ADMIN
 }
 
 @WebServlet(name = "loginServlet", value = "/login-servlet")
@@ -32,22 +37,42 @@ public class LoginServlet extends HttpServlet {
         response.setContentType("text/html");
         String username = request.getParameter("user-id");
         String password = request.getParameter("password");
-        String dbType = request.getParameter("toggle-switch");
+        //String dbType = request.getParameter("toggle-switch");
         try {
             if (checkLogin(username, password)) {
                 PrintWriter out = response.getWriter();
-                out.println("logged in");
+
+                request.setAttribute("userType", getUserType(username));
+                request.getRequestDispatcher("/index.jsp").forward(request, response);
             } else {
                 PrintWriter out = response.getWriter();
                 out.println("not logged in");
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
         }
     }
 
+    private UserType getUserType(String username) {
+        UserType userType;
+        DBScripts db = new DBScripts();
+        String userID = db.checkUserType(username);
+        int type = userID.charAt(0);
+        if (type == 49) {
+            userType = UserType.STUDENT;
+        } else if (type == 50) {
+            userType = UserType.TEACHER;
+        } else {
+            userType = UserType.ADMIN;
+        }
+        return userType;
+    }
+
     public boolean checkLogin(String username, String password) throws SQLException {
-        if (SliderValueServlet.dbType == DBType.MONGO) {
+        DBType dbType = DBType.SQL;
+        if (dbType == DBType.MONGO) {
             MongoClient mongo = MongoClients.create();
             MongoDatabase db = mongo.getDatabase("StudentMarks");
             MongoCollection login = db.getCollection("Users");
