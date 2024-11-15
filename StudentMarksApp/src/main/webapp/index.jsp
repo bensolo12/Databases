@@ -37,9 +37,8 @@
       text-align: center;
       border-radius: 15px;
     }
-    /* Style for the login pop-up */
     .login-popup {
-      display: none; /* Hidden by default */
+      display: none;
       position: fixed;
       top: 0;
       left: 0;
@@ -99,17 +98,6 @@
       top: 20px;
       right: 20px;
     }
-    .DBSwitch-button {
-      cursor: pointer;
-      padding: 10px;
-      background-color: #007BFF;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      position: absolute;
-      top: 20px;
-      left: 20px;
-    }
   </style>
 </head>
 <body>
@@ -123,19 +111,19 @@
   </div>
 
   <div class="grid-container">
-    <div class="grid-item" id="grid-item1">University News</div>
-    <div class="grid-item" id="grid-item2">What's on</div>
-    <div class="grid-item" id="grid-item3">Restaurant</div>
-    <div class="grid-item" id="grid-item4">Library Links</div>
-    <div class="grid-item" id="grid-item5">Help Zone</div>
-    <div class="grid-item" id="grid-item6">Equipment Hire</div>
+    <div class="grid-item" id="grid-item1"><button onclick="handleClick('grid-item1')"></button></div>
+    <div class="grid-item" id="grid-item2"><button onclick="handleClick('grid-item2')"></button></div>
+    <div class="grid-item" id="grid-item3"><button onclick="handleClick('grid-item3')"></button></div>
+    <div class="grid-item" id="grid-item4"><button onclick="handleClick('grid-item4')"></button></div>
+    <div class="grid-item" id="grid-item5"><button onclick="handleClick('grid-item5')"></button></div>
+    <div class="grid-item" id="grid-item6"><button onclick="handleClick('grid-item6')"></button></div>
   </div>
 
 <%--  <form action="index.jsp" method="post">
     <button class="DBSwitch-button" id="DBSwitch-button" onclick="toggleLabel()">Switch to SQL</button>
   </form>--%>
 
-  <button class="login-button" onclick="openLogin()">Login</button>
+  <button class="login-button" id="login-button" onclick="openLogin()">Login</button>
 
   <!-- The login pop-up -->
   <div class="login-popup" id="loginPopup">
@@ -167,15 +155,59 @@
     renderHomePage(userType, userName);
   });
 
+  function handleClick(itemId) {
+    var userType = "<%= request.getAttribute("userType") %>";
+    if (userType === "STUDENT"){
+        if (itemId === "grid-item1"){
+            window.location.href = "enrolment.jsp";
+        }
+        else if (itemId === "grid-item2"){
+            window.location.href = "moduleReg.jsp";
+        }
+        else if (itemId === "grid-item3"){
+            window.location.href = "moduleRes.jsp";
+        }
+        else if (itemId === "grid-item4"){
+            window.location.href = "timetable.jsp";
+        }
+    }
+        else if (userType === "TEACHER"){
+        if (itemId === "grid-item1"){
+            window.location.href = "result-entry.jsp";
+        }
+        else if (itemId === "grid-item2"){
+            window.location.href = "student-results.jsp";
+        }
+        else if (itemId === "grid-item3"){
+            window.location.href = "courses.jsp";
+        }
+        else if (itemId === "grid-item4"){
+            window.location.href = "timetable.jsp";
+        }
+        }
+        else if (userType === "ADMIN"){
+        if (itemId === "grid-item1"){
+            window.location.href = "view-users.jsp";
+        }
+        else if (itemId === "grid-item2"){
+            window.location.href = "add-user.jsp";
+        }
+        else if (itemId === "grid-item3"){
+            window.location.href = "remove-user.jsp";
+        }
+    }
+  }
+
   function renderHomePage(userType, userName){
 
     if (userType === "STUDENT"){
       document.getElementById("grid-item1").textContent = "Enrollment";
+      document.getElementById("grid-item1").onclick = "window.location.href = 'enrolment.jsp'";
       document.getElementById("grid-item2").textContent = "Module Registration";
       document.getElementById("grid-item3").textContent = "Module Results";
       document.getElementById("grid-item4").textContent = "Timetable";
       document.getElementById("welcomeMsg").textContent = "Student Homepage";
-      document.getElementById("loginPopup").textContent = userName;
+      document.getElementById("login-button").textContent = userName;
     }
     else if (userType === "TEACHER"){
       document.getElementById("grid-item1").textContent = "Module Result Entry";
@@ -191,6 +223,11 @@
     }
     else{
       document.getElementById("grid-item1").textContent = "University News";
+        document.getElementById("grid-item2").textContent = "What's On";
+        document.getElementById("grid-item3").textContent = "Restaurant";
+        document.getElementById("grid-item4").textContent = "Library Links";
+        document.getElementById("grid-item5").textContent = "Help Zone";
+        document.getElementById("grid-item6").textContent = "Equipment Hire";
       document.getElementById("welcomeMsg").textContent = "Please log in to view your homepage";
     }
   }

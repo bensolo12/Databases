@@ -42,7 +42,7 @@ public class LoginServlet extends HttpServlet {
             if (checkLogin(username, password)) {
                 PrintWriter out = response.getWriter();
                 UserType userType = getUserType(username);
-                request.setAttribute("username", username.toString());
+                request.setAttribute("userName", username);
                 request.setAttribute("userType", userType.toString());
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
             } else {
