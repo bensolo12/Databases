@@ -1,3 +1,4 @@
+<%--@elvariable id="userType" type="java.lang.String"--%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -116,16 +117,18 @@
 <div class="container">
   <div class="header">
     <h1>Home Page</h1>
-    <p>Please sign in to see your home page</p>
+    <div class="welcomeMsg" id="welcomeMsg">
+<%--    <p>Welcome, ${userType}!</p>--%>
+    </div>
   </div>
 
   <div class="grid-container">
-    <div class="grid-item">University News</div>
-    <div class="grid-item">What's on</div>
-    <div class="grid-item">Restaurant</div>
-    <div class="grid-item">Library Links</div>
-    <div class="grid-item">Help Zone</div>
-    <div class="grid-item">Equipment Hire</div>
+    <div class="grid-item" id="grid-item1">University News</div>
+    <div class="grid-item" id="grid-item2">What's on</div>
+    <div class="grid-item" id="grid-item3">Restaurant</div>
+    <div class="grid-item" id="grid-item4">Library Links</div>
+    <div class="grid-item" id="grid-item5">Help Zone</div>
+    <div class="grid-item" id="grid-item6">Equipment Hire</div>
   </div>
 
 <%--  <form action="index.jsp" method="post">
@@ -158,6 +161,39 @@
   function openLogin() {
     document.getElementById("loginPopup").style.display = "flex";
   }
+  document.addEventListener("DOMContentLoaded", function() {
+    var userType = "<%= request.getAttribute("userType") %>";
+    var userName = "<%= request.getAttribute("userName") %>";
+    renderHomePage(userType, userName);
+  });
+
+  function renderHomePage(userType, userName){
+
+    if (userType === "STUDENT"){
+      document.getElementById("grid-item1").textContent = "Enrollment";
+      document.getElementById("grid-item2").textContent = "Module Registration";
+      document.getElementById("grid-item3").textContent = "Module Results";
+      document.getElementById("grid-item4").textContent = "Timetable";
+      document.getElementById("welcomeMsg").textContent = "Student Homepage";
+      document.getElementById("loginPopup").textContent = userName;
+    }
+    else if (userType === "TEACHER"){
+      document.getElementById("grid-item1").textContent = "Module Result Entry";
+      document.getElementById("grid-item2").textContent = "Student Results";
+      document.getElementById("grid-item3").textContent = "Courses";
+      document.getElementById("grid-item4").textContent = "Timetable";
+      document.getElementById("welcomeMsg").textContent = "Staff Homepage";
+    }
+    else if (userType === "ADMIN"){
+      document.getElementById("grid-item1").textContent = "View All Users";
+      document.getElementById("grid-item2").textContent = "Add New User";
+      document.getElementById("grid-item3").textContent = "Remove User";
+    }
+    else{
+      document.getElementById("grid-item1").textContent = "University News";
+      document.getElementById("welcomeMsg").textContent = "Please log in to view your homepage";
+    }
+  }
 
   function closeLogin() {
     document.getElementById("loginPopup").style.display = "none";
@@ -176,6 +212,7 @@
     }
     button.textContent = newText;
   }
+
 
 </script>
 
