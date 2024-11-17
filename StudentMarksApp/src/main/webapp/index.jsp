@@ -98,6 +98,14 @@
       top: 20px;
       right: 20px;
     }
+    .nav-button {
+      cursor: pointer;
+      padding: 10px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
@@ -111,12 +119,12 @@
   </div>
 
   <div class="grid-container">
-    <div class="grid-item" id="grid-item1"><button onclick="handleClick('grid-item1')"></button></div>
-    <div class="grid-item" id="grid-item2"><button onclick="handleClick('grid-item2')"></button></div>
-    <div class="grid-item" id="grid-item3"><button onclick="handleClick('grid-item3')"></button></div>
-    <div class="grid-item" id="grid-item4"><button onclick="handleClick('grid-item4')"></button></div>
-    <div class="grid-item" id="grid-item5"><button onclick="handleClick('grid-item5')"></button></div>
-    <div class="grid-item" id="grid-item6"><button onclick="handleClick('grid-item6')"></button></div>
+    <div class="grid-item" id="grid-item1"><button class="nav-button" id="button1" onclick="handleClick('grid-item1')"></button></div>
+    <div class="grid-item" id="grid-item2"><button class="nav-button" id="button2" onclick="handleClick('grid-item2')"></button></div>
+    <div class="grid-item" id="grid-item3"><button class="nav-button" id="button3" onclick="handleClick('grid-item3')"></button></div>
+    <div class="grid-item" id="grid-item4"><button class="nav-button" id="button4" onclick="handleClick('grid-item4')"></button></div>
+    <div class="grid-item" id="grid-item5"><button class="nav-button" id="button5" onclick="handleClick('grid-item5')"></button></div>
+    <div class="grid-item" id="grid-item6"><button class="nav-button" id="button6" onclick="handleClick('grid-item6')"></button></div>
   </div>
 
 <%--  <form action="index.jsp" method="post">
@@ -201,33 +209,34 @@
   function renderHomePage(userType, userName){
 
     if (userType === "STUDENT"){
-      document.getElementById("grid-item1").textContent = "Enrollment";
-      document.getElementById("grid-item1").onclick = "window.location.href = 'enrolment.jsp'";
-      document.getElementById("grid-item2").textContent = "Module Registration";
-      document.getElementById("grid-item3").textContent = "Module Results";
-      document.getElementById("grid-item4").textContent = "Timetable";
+      document.getElementById("button1").textContent = "Enrollment";
+      document.getElementById("button2").textContent = "Module Registration";
+      document.getElementById("button3").textContent = "Module Results";
+      document.getElementById("button4").textContent = "Timetable";
       document.getElementById("welcomeMsg").textContent = "Student Homepage";
       document.getElementById("login-button").textContent = userName;
     }
     else if (userType === "TEACHER"){
-      document.getElementById("grid-item1").textContent = "Module Result Entry";
-      document.getElementById("grid-item2").textContent = "Student Results";
-      document.getElementById("grid-item3").textContent = "Courses";
-      document.getElementById("grid-item4").textContent = "Timetable";
+      document.getElementById("button1").textContent = "Module Result Entry";
+      document.getElementById("button2").textContent = "Student Results";
+      document.getElementById("button3").textContent = "Courses";
+      document.getElementById("button4").textContent = "Timetable";
       document.getElementById("welcomeMsg").textContent = "Staff Homepage";
+      document.getElementById("login-button").textContent = userName;
     }
     else if (userType === "ADMIN"){
-      document.getElementById("grid-item1").textContent = "View All Users";
-      document.getElementById("grid-item2").textContent = "Add New User";
-      document.getElementById("grid-item3").textContent = "Remove User";
+      document.getElementById("button1").textContent = "View All Users";
+      document.getElementById("button2").textContent = "Add New User";
+      document.getElementById("button3").textContent = "Remove User";
+      document.getElementById("login-button").textContent = userName;
     }
     else{
       document.getElementById("grid-item1").textContent = "University News";
-        document.getElementById("grid-item2").textContent = "What's On";
-        document.getElementById("grid-item3").textContent = "Restaurant";
-        document.getElementById("grid-item4").textContent = "Library Links";
-        document.getElementById("grid-item5").textContent = "Help Zone";
-        document.getElementById("grid-item6").textContent = "Equipment Hire";
+      document.getElementById("grid-item2").textContent = "What's On";
+      document.getElementById("grid-item3").textContent = "Restaurant";
+      document.getElementById("grid-item4").textContent = "Library Links";
+      document.getElementById("grid-item5").textContent = "Help Zone";
+      document.getElementById("grid-item6").textContent = "Equipment Hire";
       document.getElementById("welcomeMsg").textContent = "Please log in to view your homepage";
     }
   }
