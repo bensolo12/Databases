@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import org.bson.Document;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -25,7 +26,7 @@ enum UserType {
 
 @WebServlet(name = "loginServlet", value = "/login-servlet")
 public class LoginServlet extends HttpServlet {
-    public DBType dbType = null;
+    public DBType dbType = DBType.SQL;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -58,8 +59,20 @@ public class LoginServlet extends HttpServlet {
 
     private UserType getUserType(String username) {
         UserType userType;
-        DBScripts db = new DBScripts();
-        String userID = db.checkUserType(username);
+        String userID = "";
+        if (dbType == DBType.MONGO) {
+            MongoClient mongo = MongoClients.create();
+            MongoDatabase db = mongo.getDatabase("StudentMarks");
+            MongoCollection<Document> login = db.getCollection("Users");
+            Document user = login.find(eq("First_name", username)).first();
+            if (user != null) {
+                userID = user.getInteger("user_id").toString();
+            }
+        }
+        else {
+            DBScripts db = new DBScripts();
+            userID = db.checkUserType(username);
+        }
         int type = userID.charAt(0);
         if (type == 49) {
             userType = UserType.STUDENT;
@@ -72,7 +85,7 @@ public class LoginServlet extends HttpServlet {
     }
 
     public boolean checkLogin(String username, String password) throws SQLException {
-        DBType dbType = DBType.SQL;
+        //DBType dbType = DBType.MONGO;
         if (dbType == DBType.MONGO) {
             MongoClient mongo = MongoClients.create();
             MongoDatabase db = mongo.getDatabase("StudentMarks");

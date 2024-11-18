@@ -26,9 +26,7 @@ public class Registration extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html");
-        SliderValueServlet slider = new SliderValueServlet();
-        DBType dbType = slider.getDbType();
-
+        DBType dbType = DBType.SQL;
         //String userID = request.getParameter("userID");
         String first_name = request.getParameter("First_Name");
         String second_name = request.getParameter("Second_Name");
@@ -61,7 +59,8 @@ public class Registration extends HttpServlet {
 
     public void createUserSQL(String firstName, String secondName, String password, String DOB) throws SQLException {
         DBScripts db = new DBScripts();
-        if (!db.checkIfTableExists()) db.createTable();
+        db.createOracleSchema();
+        //if (!db.checkIfTableExists("User")) db.createTable();
 
         //Enter Registration info into user table
         String enterUserSQL = "INSERT INTO Users (USER_ID, FIRST_NAME ,Second_name, DOB, Password) VALUES (?, ?, ?, ?, ?)";
