@@ -28,11 +28,6 @@
     </main>
 </div>
 <script>
-    const modules = {
-"Computer Science": ["Algorithms", "Data Structures", "Operating Systems"],
-"Cyber Security": ["Network Security", "Cryptography", "Ethical Hacking"],
-"Cyber Forensics": ["Introduction to Cyber", "Malware Analysis", "Programming Basics"]
-};
 
 function updateModules(course) {
 const moduleList = document.getElementById("module-list");
@@ -50,9 +45,7 @@ moduleList.appendChild(li);
 });
 }
 
-function confirmSelection() {
-alert("Selection confirmed!");
-}
+function confirmSelection() {}
 </script>
 </body>
 </html>

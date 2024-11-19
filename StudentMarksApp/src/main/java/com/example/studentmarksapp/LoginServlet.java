@@ -26,7 +26,7 @@ enum UserType {
 
 @WebServlet(name = "loginServlet", value = "/login-servlet")
 public class LoginServlet extends HttpServlet {
-    public DBType dbType = DBType.SQL;
+    public DBType dbType = DBType.MONGO;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -38,9 +38,10 @@ public class LoginServlet extends HttpServlet {
         response.setContentType("text/html");
         String username = request.getParameter("user-id");
         String password = request.getParameter("password");
-        //String dbType = request.getParameter("toggle-switch");
         try {
             if (checkLogin(username, password)) {
+                MongoScripts mongoScripts = new MongoScripts();
+                mongoScripts.createMongoSchema();
                 PrintWriter out = response.getWriter();
                 UserType userType = getUserType(username);
                 request.setAttribute("userName", username);
@@ -66,10 +67,9 @@ public class LoginServlet extends HttpServlet {
             MongoCollection<Document> login = db.getCollection("Users");
             Document user = login.find(eq("First_name", username)).first();
             if (user != null) {
-                userID = user.getInteger("user_id").toString();
+                userID = ((Integer) user.get("user_id")).toString();
             }
-        }
-        else {
+        } else {
             DBScripts db = new DBScripts();
             userID = db.checkUserType(username);
         }
@@ -85,13 +85,16 @@ public class LoginServlet extends HttpServlet {
     }
 
     public boolean checkLogin(String username, String password) throws SQLException {
-        //DBType dbType = DBType.MONGO;
         if (dbType == DBType.MONGO) {
             MongoClient mongo = MongoClients.create();
             MongoDatabase db = mongo.getDatabase("StudentMarks");
-            MongoCollection login = db.getCollection("Users");
-            var check = login.find(eq("user_id", 1)).first();
-            return check != null;
+            MongoCollection<Document> login = db.getCollection("Users");
+            var check = login.find(eq("First_name", username)).first();
+            if (check != null) {
+                return ((String) check.get("Password")).equals(password);
+            } else {
+                return false;
+            }
         } else {
             DBScripts db = new DBScripts();
             Connection connection = db.ConnectDB();
