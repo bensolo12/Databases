@@ -1,4 +1,5 @@
 package com.example.studentmarksapp;
+import com.mongodb.Block;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -7,6 +8,7 @@ import org.bson.Document;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+
 
 public class MongoScripts {
     public void createMongoSchema()
@@ -68,7 +70,7 @@ public class MongoScripts {
                 .append("course_id", 3);
         Document module8 = new Document()
                 .append("module_id", 8)
-                .append("module_name", "Cyber Security Management")
+                .append("module_name", "Computational Law")
                 .append("course_id", 3);
         Document module9 = new Document()
                 .append("module_id", 9)
@@ -77,5 +79,51 @@ public class MongoScripts {
         ArrayList<Document> modules = new ArrayList<Document>();
         modules.addAll(Arrays.asList(module1, module2, module3, module4, module5, module6, module7, module8, module9));
         collection.insertMany(modules);
+    }
+    public static ArrayList<String> getCourses()
+    {
+        try {
+            MongoClient mongo = MongoClients.create();
+            MongoDatabase db = mongo.getDatabase("StudentMarks");
+            MongoCollection<Document> courses = db.getCollection("Course");
+            return courses.distinct("course_name", String.class).into(new ArrayList<>());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static ArrayList<String> getModules()
+    {
+        try {
+            MongoClient mongo = MongoClients.create();
+            MongoDatabase db = mongo.getDatabase("StudentMarks");
+            MongoCollection<Document> modules = db.getCollection("Modules");
+            MongoCollection<Document> courses = db.getCollection("Course");
+            var moduleList = new ArrayList<String>();
+            modules.find().forEach((Block<? super Document>) (Document module) -> {
+                Document course = courses.find(new Document("course_id", module.getInteger("course_id"))).first();
+                module.append("course_name", course.getString("course_name"));
+                moduleList.add(module.toJson());
+            });
+            for (String module : moduleList) {
+                if (module.contains("\"course_id\": 1"))
+                {
+                    // set it to look like this "Computer Science": ["Algorithms", "Data Structures", "Operating Systems"]
+                }
+                else if (module.contains("\"course_id\": 2"))
+                {
+
+                }
+                else if (module.contains("\"course_id\": 3"))
+                {
+
+                }
+            }
+            return moduleList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

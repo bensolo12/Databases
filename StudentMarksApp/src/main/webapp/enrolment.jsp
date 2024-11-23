@@ -15,9 +15,9 @@
         <div class="course-selection">
             <h3>Course Selection</h3>
             <ul id="course-list">
-                <li onclick="updateModules('Computer Science')">Computer Science</li>
-                <li onclick="updateModules('Cyber Security')">Cyber Security</li>
-                <li onclick="updateModules('Cyber Forensics')">Cyber Forensics</li>
+                <li id="course1" onclick="updateModules('Computer Science')">Course 1</li>
+                <li id="course2" onclick="updateModules('Cyber Security')">Course 2</li>
+                <li id="course3" onclick="updateModules('Cyber Forensics')">Course 3</li>
             </ul>
         </div>
         <div class="module-selection">
@@ -28,24 +28,52 @@
     </main>
 </div>
 <script>
+    const modules = {
+"Computer Science": ["Algorithms", "Data Structures", "Operating Systems"],
+"Cyber Security": ["Network Security", "Cryptography", "Ethical Hacking"],
+"Cyber Forensics": ["Introduction to Cyber", "Malware Analysis", "Programming Basics"]
+};
 
-function updateModules(course) {
-const moduleList = document.getElementById("module-list");
-const moduleHeader = document.getElementById("module-header");
-
-// Clear existing modules
-moduleList.innerHTML = "";
-
-// Update header and add new modules
-moduleHeader.textContent = `${course} Modules`;
-modules[course].forEach(module => {
-const li = document.createElement("li");
-li.textContent = module;
-moduleList.appendChild(li);
-});
+function getCourseList() {
+    var courseList = JSON.parse('<%= request.getAttribute("courses") %>');
+    for (var course of courseList) {
+        console.log(course);
+    }
+    return courseList;
+}
+function updateCourses() {
+    var courseList = getCourseList();
+    var course1 = document.getElementById("course1");
+    var course2 = document.getElementById("course2");
+    var course3 = document.getElementById("course3");
+    course1.textContent = courseList[0];
+    course2.textContent = courseList[1];
+    course3.textContent = courseList[2];
 }
 
-function confirmSelection() {}
+/*function updateModules(course) {
+        const moduleList = document.getElementById("module-list");
+        const moduleHeader = document.getElementById("module-header");
+
+        // Clear existing modules
+        moduleList.innerHTML = "";
+
+        // Update header and add new modules
+        moduleHeader.textContent = `${course} Modules`;
+        modules[course].forEach(module => {
+            const li = document.createElement("li");
+            li.textContent = module;
+            moduleList.appendChild(li);
+        });
+    }
+
+    }*/
+document.addEventListener("DOMContentLoaded", function() {
+    updateCourses();});
+
+function confirmSelection() {
+alert("Selection confirmed!");
+}
 </script>
 </body>
 </html>

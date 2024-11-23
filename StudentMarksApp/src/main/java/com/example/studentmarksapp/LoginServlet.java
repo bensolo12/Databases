@@ -40,9 +40,7 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
         try {
             if (checkLogin(username, password)) {
-                MongoScripts mongoScripts = new MongoScripts();
-                mongoScripts.createMongoSchema();
-                PrintWriter out = response.getWriter();
+                createMongoSchema();
                 UserType userType = getUserType(username);
                 request.setAttribute("userName", username);
                 request.setAttribute("userType", userType.toString());
@@ -55,6 +53,19 @@ public class LoginServlet extends HttpServlet {
             throw new RuntimeException(e);
         } catch (ServletException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void createMongoSchema(){
+        MongoClient mongo = MongoClients.create();
+        MongoDatabase db = mongo.getDatabase("StudentMarks");
+        MongoCollection<Document> check = db.getCollection("Course");
+        if (check.countDocuments() > 0) {
+            return;
+        }
+        else {
+            MongoScripts mongoScripts = new MongoScripts();
+            mongoScripts.createMongoSchema();
         }
     }
 

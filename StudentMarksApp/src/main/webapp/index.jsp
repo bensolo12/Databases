@@ -167,7 +167,11 @@
     var userType = "<%= request.getAttribute("userType") %>";
     if (userType === "STUDENT"){
         if (itemId === "grid-item1"){
-            window.location.href = "enrolment.jsp";
+          var form = document.createElement("form");
+          form.method = "post";
+          form.action = "${pageContext.request.contextPath}/Enrolment-Servlet";
+          document.body.appendChild(form);
+          form.submit();
         }
         else if (itemId === "grid-item2"){
             window.location.href = "moduleReg.jsp";

@@ -13,11 +13,11 @@
     <url-pattern>/login-servlet</url-pattern>
 </servlet-mapping>
     <servlet>
-        <servlet-name>SliderValueServlet</servlet-name>
-        <servlet-class>com.example.studentmarksapp.SliderValueServlet</servlet-class>
+        <servlet-name>EnrolmentServlet</servlet-name>
+        <servlet-class>com.example.studentmarksapp.EnrolmentServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>SliderValueServlet</servlet-name>
-        <url-pattern>/update-slider-value</url-pattern>
+        <servlet-name>EnrolmentServlet</servlet-name>
+        <url-pattern>/Enrolment-Servlet</url-pattern>
     </servlet-mapping>
 </web-app>
