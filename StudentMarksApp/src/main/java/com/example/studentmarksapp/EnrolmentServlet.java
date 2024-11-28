@@ -26,7 +26,7 @@ public class EnrolmentServlet extends HttpServlet {
         String coursesJson = gson.toJson(courses);
         String modulesJson = gson.toJson(modules);
         request.setAttribute("courses", coursesJson);
-        request.setAttribute("modules", modulesJson);
+        request.setAttribute("modules", modules);
         request.getRequestDispatcher("/enrolment.jsp").forward(request, response);
     }
     private String getSelectedCourse(HttpServletRequest request) {

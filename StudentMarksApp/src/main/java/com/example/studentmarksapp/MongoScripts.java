@@ -93,8 +93,7 @@ public class MongoScripts {
         }
     }
 
-    public static ArrayList<String> getModules()
-    {
+    public static ArrayList<String> getModules() {
         try {
             MongoClient mongo = MongoClients.create();
             MongoDatabase db = mongo.getDatabase("StudentMarks");
@@ -106,20 +105,6 @@ public class MongoScripts {
                 module.append("course_name", course.getString("course_name"));
                 moduleList.add(module.toJson());
             });
-            for (String module : moduleList) {
-                if (module.contains("\"course_id\": 1"))
-                {
-                    // set it to look like this "Computer Science": ["Algorithms", "Data Structures", "Operating Systems"]
-                }
-                else if (module.contains("\"course_id\": 2"))
-                {
-
-                }
-                else if (module.contains("\"course_id\": 3"))
-                {
-
-                }
-            }
             return moduleList;
         } catch (Exception e) {
             e.printStackTrace();

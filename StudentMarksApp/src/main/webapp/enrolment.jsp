@@ -28,11 +28,7 @@
     </main>
 </div>
 <script>
-    const modules = {
-"Computer Science": ["Algorithms", "Data Structures", "Operating Systems"],
-"Cyber Security": ["Network Security", "Cryptography", "Ethical Hacking"],
-"Cyber Forensics": ["Introduction to Cyber", "Malware Analysis", "Programming Basics"]
-};
+    let selectedCourse = "";
 
 function getCourseList() {
     var courseList = JSON.parse('<%= request.getAttribute("courses") %>');
@@ -51,28 +47,30 @@ function updateCourses() {
     course3.textContent = courseList[2];
 }
 
-/*function updateModules(course) {
+    function updateModules(course) {
+        selectedCourse = course;
+        const modules = JSON.parse('<%= request.getAttribute("modules") %>');
+
         const moduleList = document.getElementById("module-list");
         const moduleHeader = document.getElementById("module-header");
 
-        // Clear existing modules
         moduleList.innerHTML = "";
 
-        // Update header and add new modules
-        moduleHeader.textContent = `${course} Modules`;
-        modules[course].forEach(module => {
-            const li = document.createElement("li");
-            li.textContent = module;
-            moduleList.appendChild(li);
-        });
-    }
+        moduleHeader.textContent = "Modules for " + course;
 
-    }*/
+        for (var module of modules) {
+            if (module.course_name === course) {
+                const li = document.createElement("li");
+                li.textContent = module.module_name;
+                moduleList.appendChild(li);
+            }
+        }
+    }
 document.addEventListener("DOMContentLoaded", function() {
     updateCourses();});
 
 function confirmSelection() {
-alert("Selection confirmed!");
+    // ask user if they're sure
 }
 </script>
 </body>
