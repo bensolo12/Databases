@@ -5,6 +5,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
   <title>Home Page</title>
   <style>
     body {
@@ -127,10 +128,6 @@
     <div class="grid-item" id="grid-item6"><button class="nav-button" id="button6" onclick="handleClick('grid-item6')"></button></div>
   </div>
 
-<%--  <form action="index.jsp" method="post">
-    <button class="DBSwitch-button" id="DBSwitch-button" onclick="toggleLabel()">Switch to SQL</button>
-  </form>--%>
-
   <button class="login-button" id="login-button" onclick="openLogin()">Login</button>
 
   <!-- The login pop-up -->
@@ -243,6 +240,10 @@
       document.getElementById("grid-item6").textContent = "Equipment Hire";
       document.getElementById("welcomeMsg").textContent = "Please log in to view your homepage";
     }
+  }
+
+  function logout(){
+    //submit form that goes to index.jsp
   }
 
   function closeLogin() {

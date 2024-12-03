@@ -27,7 +27,7 @@ enum UserType {
 @WebServlet(name = "loginServlet", value = "/login-servlet")
 public class LoginServlet extends HttpServlet {
     public DBType dbType = DBType.MONGO;
-
+    public HttpSession session;
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "GET method is not supported.");
@@ -36,6 +36,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html");
+        session = request.getSession(true);
         String username = request.getParameter("user-id");
         String password = request.getParameter("password");
         try {
@@ -49,9 +50,7 @@ public class LoginServlet extends HttpServlet {
                 PrintWriter out = response.getWriter();
                 out.println("not logged in");
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (ServletException e) {
+        } catch (SQLException | ServletException e) {
             throw new RuntimeException(e);
         }
     }
@@ -60,10 +59,7 @@ public class LoginServlet extends HttpServlet {
         MongoClient mongo = MongoClients.create();
         MongoDatabase db = mongo.getDatabase("StudentMarks");
         MongoCollection<Document> check = db.getCollection("Course");
-        if (check.countDocuments() > 0) {
-            return;
-        }
-        else {
+        if (check.countDocuments() < 0) {
             MongoScripts mongoScripts = new MongoScripts();
             mongoScripts.createMongoSchema();
         }
@@ -79,6 +75,7 @@ public class LoginServlet extends HttpServlet {
             Document user = login.find(eq("First_name", username)).first();
             if (user != null) {
                 userID = ((Integer) user.get("user_id")).toString();
+                session.setAttribute("userID", userID);
             }
         } else {
             DBScripts db = new DBScripts();
@@ -92,6 +89,7 @@ public class LoginServlet extends HttpServlet {
         } else {
             userType = UserType.ADMIN;
         }
+        session.setAttribute("userType", userType);
         return userType;
     }
 

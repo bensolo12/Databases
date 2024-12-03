@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+<button class="logout-button" id="logout-button" onclick="logout()"></button>
+
 <div class="container">
     <header>
         <h1>Student Enrollment Page</h1>
@@ -23,7 +26,7 @@
         <div class="module-selection">
             <h3 id="module-header">Modules</h3>
             <ul id="module-list"></ul>
-            <button onclick="confirmSelection()">Confirm Selection</button>
+            <button id="btnConf" onclick="confirmSelection()">Confirm Selection</button>
         </div>
     </main>
 </div>
@@ -70,7 +73,26 @@ document.addEventListener("DOMContentLoaded", function() {
     updateCourses();});
 
 function confirmSelection() {
-    // ask user if they're sure
+    if (selectedCourse === "") {
+        alert("Please select a course and module");
+    } else {
+        var form = document.createElement("form");
+        form.method = "post";
+        form.action = "${pageContext.request.contextPath}/Enrolment-Servlet";
+        var input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "course";
+        input.value = selectedCourse;
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+function openLogin() {
+    document.getElementById("loginPopup").style.display = "flex";
+}
+function closeLogin() {
+    document.getElementById("loginPopup").style.display = "none";
 }
 </script>
 </body>

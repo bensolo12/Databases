@@ -11,6 +11,20 @@ import java.util.Collection;
 
 
 public class MongoScripts {
+    public static void enrolStudent(String course, String userID) {
+        try {
+            MongoClient mongo = MongoClients.create();
+            MongoDatabase db = mongo.getDatabase("StudentMarks");
+            MongoCollection<Document> users = db.getCollection("Users");
+            Document user = users.find(new Document("user_id", Integer.parseInt(userID))).first();
+            user.append("enrolled", "Y");
+            user.append("course", course);
+            users.updateOne(new Document("user_id", Integer.parseInt(userID)), new Document("$set", user));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void createMongoSchema()
     {
         MongoClient mongo = MongoClients.create();
