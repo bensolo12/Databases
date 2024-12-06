@@ -26,7 +26,7 @@ enum UserType {
 
 @WebServlet(name = "loginServlet", value = "/login-servlet")
 public class LoginServlet extends HttpServlet {
-    public DBType dbType = DBType.MONGO;
+    public DBType dbType = DBType.SQL;
     public HttpSession session;
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -39,12 +39,19 @@ public class LoginServlet extends HttpServlet {
         session = request.getSession(true);
         String username = request.getParameter("user-id");
         String password = request.getParameter("password");
+        int userID = 0;
+        try {
+            userID = (int) session.getAttribute("userID");
+        }
+        catch (NullPointerException e){}
         try {
             if (checkLogin(username, password)) {
-                createMongoSchema();
+                //createMongoSchema();
                 UserType userType = getUserType(username);
                 request.setAttribute("userName", username);
                 request.setAttribute("userType", userType.toString());
+                request.setAttribute("userID", userID);
+                request.setAttribute("userCourse", getUserCourse(userID));
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
             } else {
                 PrintWriter out = response.getWriter();
@@ -52,6 +59,19 @@ public class LoginServlet extends HttpServlet {
             }
         } catch (SQLException | ServletException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private String getUserCourse(int userID) {
+        if (dbType == DBType.MONGO) {
+            MongoClient mongo = MongoClients.create();
+            MongoDatabase db = mongo.getDatabase("StudentMarks");
+            MongoCollection<Document> users = db.getCollection("Users");
+            Document user = users.find(eq("user_id", Integer.parseInt(String.valueOf(userID)))).first();
+            return (String) user.get("course");
+        } else {
+            SQLScripts db = new SQLScripts();
+            return db.getUserCourse((Integer) userID);
         }
     }
 
@@ -78,8 +98,9 @@ public class LoginServlet extends HttpServlet {
                 session.setAttribute("userID", userID);
             }
         } else {
-            DBScripts db = new DBScripts();
+            SQLScripts db = new SQLScripts();
             userID = db.checkUserType(username);
+            session.setAttribute("userID", userID);
         }
         int type = userID.charAt(0);
         if (type == 49) {
@@ -105,7 +126,7 @@ public class LoginServlet extends HttpServlet {
                 return false;
             }
         } else {
-            DBScripts db = new DBScripts();
+            SQLScripts db = new SQLScripts();
             Connection connection = db.ConnectDB();
             String checkUserSQL = "SELECT * FROM USERS WHERE FIRST_NAME = ? AND PASSWORD = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(checkUserSQL);

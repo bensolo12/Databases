@@ -132,18 +132,26 @@
 
   <!-- The login pop-up -->
   <div class="login-popup" id="loginPopup">
-    <div class="login-box">
-      <h3>Sign In</h3>
-      <form action="${pageContext.request.contextPath}/login-servlet" method="post">
+    <div class="login-box" id="loginBox">
+      <h3 id="popup-title">Sign In</h3>
+      <form id="login-form" action="${pageContext.request.contextPath}/login-servlet" method="post">
         <label for="user-id">User ID</label>
         <input type="text" id="user-id" name="user-id" placeholder="18263">
         <label for="password">Password</label>
         <input type="password" id="password" name="password" placeholder="********">
-
         <input type="submit" value="Sign in">
       </form>
-      <a href="#">Forgot Password?</a>
-      <a href="registration.jsp">Sign Up</a>
+      <a href="#" id="forgot-password">Forgot Password?</a>
+      <a href="registration.jsp" id="sign-up">Sign Up</a>
+      <button onclick="closeLogin()">Close</button>
+    </div>
+    <div class="login-box" id="studentBox" style="display: none;">
+      <h3>Student Info</h3>
+      <p id="student-id"></p>
+      <p id="student-course"></p>
+      <form id="logout-form" action="${pageContext.request.contextPath}/logout-servlet" method="post">
+        <input type="submit" value="Sign out">
+      </form>
       <button onclick="closeLogin()">Close</button>
     </div>
   </div>
@@ -152,12 +160,26 @@
 
 <script>
   function openLogin() {
+    document.getElementById("popup-title").textContent = "Sign In";
+    document.getElementById("login-form").style.display = "block";
+    document.getElementById("studentBox").style.display = "none";
     document.getElementById("loginPopup").style.display = "flex";
   }
+
+  function openStudentBox(studentId, course) {
+    document.getElementById("student-id").textContent = "Student ID: " + studentId;
+    document.getElementById("student-course").textContent = "Course: " + course;
+    document.getElementById("login-form").style.display = "none";
+    document.getElementById("studentBox").style.display = "block";
+    document.getElementById("loginPopup").style.display = "flex";
+  }
+
   document.addEventListener("DOMContentLoaded", function() {
     var userType = "<%= request.getAttribute("userType") %>";
     var userName = "<%= request.getAttribute("userName") %>";
-    renderHomePage(userType, userName);
+    var studentId = "<%= request.getAttribute("studentId") %>";
+    var course = "<%= request.getAttribute("course") %>";
+    renderHomePage(userType, userName, studentId, course);
   });
 
   function handleClick(itemId) {
@@ -216,6 +238,7 @@
       document.getElementById("button4").textContent = "Timetable";
       document.getElementById("welcomeMsg").textContent = "Student Homepage";
       document.getElementById("login-button").textContent = userName;
+      document.getElementById("logout-button").style.display = "block";
     }
     else if (userType === "TEACHER"){
       document.getElementById("button1").textContent = "Module Result Entry";
@@ -240,10 +263,6 @@
       document.getElementById("grid-item6").textContent = "Equipment Hire";
       document.getElementById("welcomeMsg").textContent = "Please log in to view your homepage";
     }
-  }
-
-  function logout(){
-    //submit form that goes to index.jsp
   }
 
   function closeLogin() {

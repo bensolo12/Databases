@@ -23,8 +23,20 @@ public class EnrolmentServlet extends HttpServlet {
         HttpSession session = request.getSession(true);
         String userID = (String) session.getAttribute("userID");
 
-        ArrayList<String> courses = MongoScripts.getCourses();
-        ArrayList<String> modules = MongoScripts.getModules();
+        SQLScripts sqlScripts = new SQLScripts();
+        ArrayList<String> courses;
+        ArrayList<String> modules;
+        DBType dbType = DBType.SQL;
+
+        if (dbType == DBType.SQL){
+            courses = sqlScripts.getCourses();
+            modules = sqlScripts.getModules();
+        }
+        else {
+            courses = MongoScripts.getCourses();
+            modules = MongoScripts.getModules();
+        }
+
         Gson gson = new Gson();
         String coursesJson = gson.toJson(courses);
         String modulesJson = gson.toJson(modules);
@@ -37,7 +49,18 @@ public class EnrolmentServlet extends HttpServlet {
                 request.getRequestDispatcher("/enrolment.jsp").forward(request, response);
             }
             else{
-                MongoScripts.enrolStudent(request.getParameter("course"), userID);
+                if (dbType == DBType.SQL){
+                    //Check student is not already enrolled
+                    if (sqlScripts.checkStudentIsEnrolled(userID)){
+                        request.getRequestDispatcher("/moduleSel.jsp").forward(request, response);
+                    }
+                    else {
+                        sqlScripts.enrolStudent(request.getParameter("course"), userID);
+                    }
+                }
+                else {
+                    MongoScripts.enrolStudent(request.getParameter("course"), userID);
+                }
             }
         } catch (NullPointerException e){
             request.getRequestDispatcher("/enrolment.jsp").forward(request, response);

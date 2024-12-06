@@ -58,7 +58,7 @@ public class Registration extends HttpServlet {
     }
 
     public void createUserSQL(String firstName, String secondName, String password, String DOB) throws SQLException {
-        DBScripts db = new DBScripts();
+        SQLScripts db = new SQLScripts();
         db.createOracleSchema();
         //if (!db.checkIfTableExists("User")) db.createTable();
 

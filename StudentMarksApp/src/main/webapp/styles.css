@@ -94,14 +94,8 @@ button:hover {
     margin: 8px 0;
     box-sizing: border-box;
 }
-.logout-box input[type="submit"] {
-    background-color: #f44336;
-    color: white;
-    padding: 10px;
-    border: none;
-    width: 100%;
-    cursor: pointer;
-    border-radius: 5px;
+#studentBox {
+    display: none;
 }
 .login-box input[type="submit"] {
     background-color: #4CAF50;
