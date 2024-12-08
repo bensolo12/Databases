@@ -62,7 +62,7 @@ function updateCourses() {
         moduleHeader.textContent = "Modules for " + course;
 
         for (var module of modules) {
-            if (module.course_name === course) {
+            if (module.course_name === course && module.optional === 'N') {
                 const li = document.createElement("li");
                 li.textContent = module.module_name;
                 moduleList.appendChild(li);

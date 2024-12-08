@@ -193,7 +193,11 @@
           form.submit();
         }
         else if (itemId === "grid-item2"){
-            window.location.href = "moduleReg.jsp";
+          var form = document.createElement("form");
+          form.method = "post";
+          form.action = "${pageContext.request.contextPath}/Module-Select-Servlet";
+          document.body.appendChild(form);
+          form.submit();
         }
         else if (itemId === "grid-item3"){
             window.location.href = "moduleRes.jsp";

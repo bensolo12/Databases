@@ -78,6 +78,31 @@ public class SQLScripts {
         return modules;
     }
 
+    public ArrayList<String> getModules(int courseID) {
+        Gson gson = new Gson();
+        ArrayList<String> modules = new ArrayList<>();
+        String getModulesString = "SELECT MODULES.* FROM MODULES WHERE COURSE_ID = ?";
+        try (Connection connection = ConnectDB();
+             PreparedStatement statement = connection.prepareStatement(getModulesString)) {
+            statement.setInt(1, courseID);
+            ResultSet resultSet = statement.executeQuery();
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+            //Converts the data from the result set into json readable by the front end
+            while (resultSet.next()) {
+                Map<String, Object> row = new HashMap<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    row.put(metaData.getColumnName(i).toLowerCase(), resultSet.getObject(i));
+                }
+                // Convert the map to JSON and add it to the list
+                modules.add(gson.toJson(row));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return modules;
+    }
+
 
     public void createOracleSchema() {
         String url = "jdbc:oracle:thin:@//oracle.glos.ac.uk:1521/orclpdb.chelt.local";
@@ -225,7 +250,7 @@ public class SQLScripts {
     }
 
     public String getUserCourse(int userID) {
-        String getUserCourseSQL = "SELECT COURSE_NAME FROM COURSE WHERE COURSE_ID = (SELECT COURSE_ID FROM STUDENTS_COURSES WHERE USER_ID = ?)";
+        String getUserCourseSQL = "SELECT COURSE_ID FROM COURSE WHERE COURSE_ID = (SELECT COURSE_ID FROM STUDENTS_COURSES WHERE USER_ID = ?)";
         try (Connection connection = ConnectDB();
              PreparedStatement preparedStatement = connection.prepareStatement(getUserCourseSQL)) {
             preparedStatement.setInt(1, (int) userID);
@@ -237,5 +262,34 @@ public class SQLScripts {
             throw new RuntimeException(e);
         }
         return null;
+    }
+
+    public int getUserCourseID(int userID) {
+        String getUserCourseSQL = "SELECT COURSE_ID FROM COURSE WHERE COURSE_ID = (SELECT COURSE_ID FROM STUDENTS_COURSES WHERE USER_ID = ?)";
+        try (Connection connection = ConnectDB();
+             PreparedStatement preparedStatement = connection.prepareStatement(getUserCourseSQL)) {
+            preparedStatement.setInt(1, (int) userID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt("COURSE_ID");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return 0;
+    }
+
+    public void addStudentModule(int studentID, int moduleID) {
+        String addStudentModuleSQL = "INSERT INTO Students_Modules (USER_ID, MODULE_ID, MODULE_YEAR) VALUES (?, ?, ?)";
+        int year = Year.now().getValue();
+        try (Connection connection = ConnectDB();
+             PreparedStatement preparedStatement = connection.prepareStatement(addStudentModuleSQL)) {
+            preparedStatement.setInt(1, studentID);
+            preparedStatement.setInt(2, moduleID);
+            preparedStatement.setInt(3, year);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
