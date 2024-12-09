@@ -26,7 +26,7 @@ enum UserType {
 
 @WebServlet(name = "loginServlet", value = "/login-servlet")
 public class LoginServlet extends HttpServlet {
-    public DBType dbType = DBType.SQL;
+    public DBType dbType = DBType.MONGO;
     public HttpSession session;
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -50,8 +50,8 @@ public class LoginServlet extends HttpServlet {
                 UserType userType = getUserType(username);
                 request.setAttribute("userName", username);
                 request.setAttribute("userType", userType.toString());
-                request.setAttribute("userID", userID);
-                request.setAttribute("userCourse", getUserCourse(userID));
+                //request.setAttribute("userID", userID);
+                //request.setAttribute("userCourse", getUserCourse(userID));
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
             } else {
                 PrintWriter out = response.getWriter();

@@ -26,7 +26,7 @@ public class EnrolmentServlet extends HttpServlet {
         SQLScripts sqlScripts = new SQLScripts();
         ArrayList<String> courses;
         ArrayList<String> modules;
-        DBType dbType = DBType.SQL;
+        DBType dbType = DBType.MONGO;
 
         if (dbType == DBType.SQL){
             courses = sqlScripts.getCourses();

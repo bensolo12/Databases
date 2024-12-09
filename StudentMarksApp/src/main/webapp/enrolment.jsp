@@ -62,7 +62,8 @@ function updateCourses() {
         moduleHeader.textContent = "Modules for " + course;
 
         for (var module of modules) {
-            if (module.course_name === course && module.optional === 'N') {
+            // Has to be like this because mongo and oracle have different ways of storing booleans
+            if (module.course_name === course && module.optional === 'N' || module.optional === false) {
                 const li = document.createElement("li");
                 li.textContent = module.module_name;
                 moduleList.appendChild(li);

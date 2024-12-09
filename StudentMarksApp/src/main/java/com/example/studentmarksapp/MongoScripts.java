@@ -125,4 +125,60 @@ public class MongoScripts {
             return null;
         }
     }
+
+    public ArrayList<String> getModules(int courseID) {
+        try {
+            MongoClient mongo = MongoClients.create();
+            MongoDatabase db = mongo.getDatabase("StudentMarks");
+            MongoCollection<Document> modules = db.getCollection("Modules");
+            MongoCollection<Document> courses = db.getCollection("Course");
+            Document course = courses.find(new Document("course_id", courseID)).first();
+            var moduleList = new ArrayList<String>();
+            modules.find(new Document("course_id", courseID)).forEach((Block<? super Document>) (Document module) -> {
+                module.append("course_name", course.getString("course_name"));
+                moduleList.add(module.toJson());
+            });
+            return moduleList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public int getUserCourseID(int userID) {
+        try {
+            MongoClient mongo = MongoClients.create();
+            MongoDatabase db = mongo.getDatabase("StudentMarks");
+            MongoCollection<Document> users = db.getCollection("Users");
+            // Find the user from the ID
+            Document user = users.find(new Document("user_id", userID)).first();
+            // Get the course name from the user
+            String courseName = user.getString("course");
+            MongoCollection<Document> courses = db.getCollection("Course");
+            // Find the course ID from the course name
+            Document course = courses.find(new Document("course_name", courseName)).first();
+            return course.getInteger("course_id");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    public void addStudentModule(int studentID, int moduleID) {
+        try {
+            MongoClient mongo = MongoClients.create();
+            MongoDatabase db = mongo.getDatabase("StudentMarks");
+            MongoCollection<Document> users = db.getCollection("Users");
+            Document user = users.find(new Document("user_id", studentID)).first();
+            ArrayList<Integer> modules = user.get("modules", ArrayList.class);
+            if (modules == null) {
+                modules = new ArrayList<>();
+            }
+            modules.add(moduleID);
+            user.append("modules", modules);
+            users.updateOne(new Document("user_id", studentID), new Document("$set", user));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
