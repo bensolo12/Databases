@@ -18,9 +18,8 @@ public class ModuleSelectServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(true);
-        SQLScripts sqlScripts = new SQLScripts();
-        int userID = Integer.parseInt((String) session.getAttribute("userID"));
 
+        int userID = Integer.parseInt((String) session.getAttribute("userID"));
         if (request.getParameter("selectedModules") != null) {
             enterStudentModules(userID, request.getParameter("selectedModules"));
         }
@@ -30,6 +29,7 @@ public class ModuleSelectServlet extends HttpServlet {
             int course = mongoScripts.getUserCourseID(userID);
             courseModules = mongoScripts.getModules(course);
         } else {
+            SQLScripts sqlScripts = new SQLScripts();
             int course = sqlScripts.getUserCourseID(userID);
             courseModules = sqlScripts.getModules(course);
 

@@ -292,4 +292,96 @@ public class SQLScripts {
             throw new RuntimeException(e);
         }
     }
+
+
+    //NOT TESTED
+    public ArrayList<String> getStaffModules(int staffID){
+        Gson gson = new Gson();
+        ArrayList<String> modules = new ArrayList<>();
+        String getModulesString = "SELECT MODULES.* FROM MODULES WHERE MODULE_TEACHER = ?";
+        try (Connection connection = ConnectDB();
+             PreparedStatement statement = connection.prepareStatement(getModulesString)) {
+            statement.setInt(1, staffID);
+            ResultSet resultSet = statement.executeQuery();
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+            //Converts the data from the result set into json readable by the front end
+            while (resultSet.next()) {
+                Map<String, Object> row = new HashMap<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    row.put(metaData.getColumnName(i).toLowerCase(), resultSet.getObject(i));
+                }
+                // Convert the map to JSON and add it to the list
+                modules.add(gson.toJson(row));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return modules;
+    }
+
+    //NOT TESTED
+    public ArrayList<Integer> getStaffModulesID(int staffID) {
+        ArrayList<Integer> modules = new ArrayList<>();
+        String getModulesString = "SELECT MODULES.MODULE_ID FROM MODULES WHERE MODULE_TEACHER = ?";
+        try (Connection connection = ConnectDB();
+             PreparedStatement statement = connection.prepareStatement(getModulesString)) {
+            statement.setInt(1, staffID);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                modules.add(resultSet.getInt("MODULE_ID"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return modules;
+    }
+
+    //NOT TESTED
+    public ArrayList<String> getStudentResults(int studentID, int moduleID){
+        ArrayList<String> results = new ArrayList<>();
+        String getResultsString = "SELECT STUDENT_RESULT FROM STUDENTS_MODULES WHERE USER_ID = ? AND MODULE_ID = ?";
+        try (Connection connection = ConnectDB();
+             PreparedStatement statement = connection.prepareStatement(getResultsString)) {
+            statement.setInt(1, studentID);
+            statement.setInt(2, moduleID);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                results.add(resultSet.getString("STUDENT_RESULT"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return results;
+    }
+
+    //NOT TESTED
+    public void addStudentResult(int studentID, int moduleID, int result){
+        String addResultString = "UPDATE STUDENTS_MODULES SET STUDENT_RESULT = ? WHERE USER_ID = ? AND MODULE_ID = ?";
+        try (Connection connection = ConnectDB();
+             PreparedStatement statement = connection.prepareStatement(addResultString)) {
+            statement.setInt(1, result);
+            statement.setInt(2, studentID);
+            statement.setInt(3, moduleID);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ArrayList<Integer> getStudentsOnModule(int moduleID) {
+        ArrayList<Integer> students = new ArrayList<>();
+        String getStudentsString = "SELECT USER_ID FROM STUDENTS_MODULES WHERE MODULE_ID = ?";
+        try (Connection connection = ConnectDB();
+             PreparedStatement statement = connection.prepareStatement(getStudentsString)) {
+            statement.setInt(1, moduleID);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                students.add(resultSet.getInt("USER_ID"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return students;
+    }
 }

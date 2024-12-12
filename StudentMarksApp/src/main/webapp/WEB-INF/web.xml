@@ -28,4 +28,20 @@
     <servlet-name>ModuleSelectServlet</servlet-name>
     <url-pattern>/Module-Select-Servlet</url-pattern>
 </servlet-mapping>
+<servlet>
+    <servlet-name>ResultEntryServlet</servlet-name>
+    <servlet-class>com.example.studentmarksapp.ResultEntryServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>ResultEntryServlet</servlet-name>
+    <url-pattern>/Result-Entry-Servlet</url-pattern>
+</servlet-mapping>
+<servlet>
+    <servlet-name>StudentResultServlet</servlet-name>
+    <servlet-class>com.example.studentmarksapp.StudentResultServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>StudentResultServlet</servlet-name>
+    <url-pattern>/Student-Result-Servlet</url-pattern>
+</servlet-mapping>
 </web-app>

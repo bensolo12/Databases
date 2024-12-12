@@ -208,10 +208,18 @@
     }
         else if (userType === "TEACHER"){
         if (itemId === "grid-item1"){
-            window.location.href = "result-entry.jsp";
+          var form = document.createElement("form");
+          form.method = "post";
+          form.action = "${pageContext.request.contextPath}/Result-Entry-Servlet";
+          document.body.appendChild(form);
+          form.submit();
         }
         else if (itemId === "grid-item2"){
-            window.location.href = "student-results.jsp";
+          var form = document.createElement("form");
+          form.method = "post";
+          form.action = "${pageContext.request.contextPath}/Student-Result-Servlet";
+          document.body.appendChild(form);
+          form.submit();
         }
         else if (itemId === "grid-item3"){
             window.location.href = "courses.jsp";

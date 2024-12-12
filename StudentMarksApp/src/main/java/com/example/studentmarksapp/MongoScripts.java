@@ -168,17 +168,97 @@ public class MongoScripts {
         try {
             MongoClient mongo = MongoClients.create();
             MongoDatabase db = mongo.getDatabase("StudentMarks");
-            MongoCollection<Document> users = db.getCollection("Users");
-            Document user = users.find(new Document("user_id", studentID)).first();
-            ArrayList<Integer> modules = user.get("modules", ArrayList.class);
-            if (modules == null) {
-                modules = new ArrayList<>();
-            }
-            modules.add(moduleID);
-            user.append("modules", modules);
-            users.updateOne(new Document("user_id", studentID), new Document("$set", user));
+            MongoCollection<Document> modules = db.getCollection("Modules");
+
+            // Add the student ID to the students array field in the module document
+            modules.updateOne(
+                    new Document("module_id", moduleID),
+                    new Document("$addToSet", new Document("students", Arrays.asList(studentID, 0)))
+            );
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public ArrayList<String> getStaffModules(int staffID){
+        // Get the modules for a staff member
+        // Find the staff member in the users collection if the userID is starts with 2
+        // Find the modules for the course that the staff member is teaching
+        // Return the modules
+        ArrayList<String> staffModules = new ArrayList<>();
+        MongoClient mongo = MongoClients.create();
+        MongoDatabase db = mongo.getDatabase("StudentMarks");
+        MongoCollection<Document> modules = db.getCollection("Modules");
+        modules.find(new Document("module_teacher", staffID)).forEach((Block<? super Document>) (Document staffModule) -> {
+            staffModules.add(staffModule.toJson());
+        });
+        return staffModules;
+    }
+
+    //NOT TESTED
+    public ArrayList<Integer> getStaffModulesID(int staffID){
+        // Get the modules for a staff member
+        // Find the staff member in the users collection if the userID is starts with 2
+        // Find the modules for the course that the staff member is teaching
+        // Return the modules
+        ArrayList<Integer> staffModuleIDs = new ArrayList<>();
+        MongoClient mongo = MongoClients.create();
+        MongoDatabase db = mongo.getDatabase("StudentMarks");
+        MongoCollection<Document> modules = db.getCollection("Modules");
+        modules.find(new Document("module_teacher", staffID)).forEach((Block<? super Document>) (Document staffModule) -> {
+            staffModuleIDs.add(staffModule.getInteger("module_id"));
+        });
+        return staffModuleIDs;
+    }
+
+    //NOT TESTED
+    public ArrayList<String> getStudentResults(int studentID, int moduleID){
+        // Get the results for a student based on their ID and the module ID
+        ArrayList<String> studentResults = new ArrayList<>();
+        MongoClient mongo = MongoClients.create();
+        MongoDatabase db = mongo.getDatabase("StudentMarks");
+        MongoCollection<Document> results = db.getCollection("Results");
+        results.find(new Document("student_id", studentID).append("module_id", moduleID)).forEach((Block<? super Document>) (Document studentResult) -> {
+            studentResults.add(studentResult.toJson());
+        });
+        return studentResults;
+    }
+
+    //NOT TESTED
+    public ArrayList<Integer> getStudentsOnModule(int moduleID) {
+        ArrayList<Integer> studentsOnModule = new ArrayList<>();
+        try {
+            MongoClient mongo = MongoClients.create();
+            MongoDatabase db = mongo.getDatabase("StudentMarks");
+            MongoCollection<Document> modules = db.getCollection("Modules");
+
+            // Find the module document by moduleID
+            Document module = modules.find(new Document("module_id", moduleID)).first();
+            if (module != null) {
+                // Get the students array from the module document
+                try {
+                    studentsOnModule = (ArrayList<Integer>) module.get("students");
+                } catch (Exception e) {
+                    return null;
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return studentsOnModule;
+    }
+
+    //NOT TESTED
+    public void addStudentResult(int studentID, int moduleID, int result){
+        // Add a result for a student based on their ID, module ID and the result
+        MongoClient mongo = MongoClients.create();
+        MongoDatabase db = mongo.getDatabase("StudentMarks");
+        MongoCollection<Document> results = db.getCollection("Results");
+        Document studentResult = new Document()
+                .append("student_id", studentID)
+                .append("module_id", moduleID)
+                .append("result", result);
+        results.insertOne(studentResult);
     }
 }
