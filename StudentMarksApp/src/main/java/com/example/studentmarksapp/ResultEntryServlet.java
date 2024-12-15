@@ -27,10 +27,7 @@ public class ResultEntryServlet extends HttpServlet {
 
         HttpSession session = request.getSession(true);
         int userID = Integer.parseInt((String) session.getAttribute("userID"));
-
-
         String studentGrades = request.getParameter("studentGrades");
-
         try {
             if (studentGrades != null) {
                 Pattern pattern = Pattern.compile("\\{\"moduleID\":(\\d+),\"studentID\":\"(\\d+)\",\"grade\":\"(\\d+)\"\\}");

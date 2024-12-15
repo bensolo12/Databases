@@ -261,4 +261,28 @@ public class MongoScripts {
                 .append("result", result);
         results.insertOne(studentResult);
     }
+
+    public ArrayList<String> getAllStudents() {
+        // Get all students from the users collection
+        ArrayList<String> studentList = new ArrayList<>();
+        MongoClient mongo = MongoClients.create();
+        MongoDatabase db = mongo.getDatabase("StudentMarks");
+        MongoCollection<Document> users = db.getCollection("Users");
+        users.find(new Document("user_id", new Document("$regex", "^1"))).forEach((Block<? super Document>) (Document student) -> {
+            studentList.add(student.toJson());
+        });
+        return studentList;
+    }
+
+    public ArrayList<String> getModuleGrades() {
+        // Get all module grades from the results collection
+        ArrayList<String> moduleGrades = new ArrayList<>();
+        MongoClient mongo = MongoClients.create();
+        MongoDatabase db = mongo.getDatabase("StudentMarks");
+        MongoCollection<Document> results = db.getCollection("Results");
+        results.find().forEach((Block<? super Document>) (Document moduleGrade) -> {
+            moduleGrades.add(moduleGrade.toJson());
+        });
+        return moduleGrades;
+    }
 }

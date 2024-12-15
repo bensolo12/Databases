@@ -397,4 +397,48 @@ public class SQLScripts {
         }
         return students;
     }
+
+    public ArrayList<String> getAllStudents() {
+        Gson gson = new Gson();
+        ArrayList<String> students = new ArrayList<>();
+        String getStudentsString = "SELECT * FROM USERS WHERE ENROLLED = 'Y'";
+        try (Connection connection = ConnectDB();
+             PreparedStatement statement = connection.prepareStatement(getStudentsString)) {
+            ResultSet resultSet = statement.executeQuery();
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+            while (resultSet.next()) {
+                Map<String, Object> row = new HashMap<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    row.put(metaData.getColumnName(i).toLowerCase(), resultSet.getObject(i));
+                }
+                students.add(gson.toJson(row));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return students;
+    }
+
+    public ArrayList<String> getModuleGrades() {
+        Gson gson = new Gson();
+        ArrayList<String> moduleGrades = new ArrayList<>();
+        String getModuleGradesString = "SELECT * FROM STUDENTS_MODULES";
+        try (Connection connection = ConnectDB();
+             PreparedStatement statement = connection.prepareStatement(getModuleGradesString)) {
+            ResultSet resultSet = statement.executeQuery();
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+            while (resultSet.next()) {
+                Map<String, Object> row = new HashMap<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    row.put(metaData.getColumnName(i).toLowerCase(), resultSet.getObject(i));
+                }
+                moduleGrades.add(gson.toJson(row));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return moduleGrades;
+    }
 }
