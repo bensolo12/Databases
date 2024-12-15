@@ -2,18 +2,21 @@ package com.example.studentmarksapp;
 
 import com.google.gson.Gson;
 import com.mongodb.util.JSON;
+import jakarta.json.Json;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @WebServlet(name = "ResultEntryServlet", value = "/ResultEntryServlet")
 public class ResultEntryServlet extends HttpServlet {
-    DBType dbType = DBType.MONGO;
+    DBType dbType = DBType.SQL;
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -46,8 +49,6 @@ public class ResultEntryServlet extends HttpServlet {
         }
 
         ArrayList<String> courseModules = new ArrayList<>();
-        ArrayList<Integer> students = new ArrayList<>();
-        ArrayList<Integer> moduleIDs = new ArrayList<>();
 
         if (dbType == DBType.MONGO) {
             MongoScripts mongoScripts = new MongoScripts();
@@ -57,7 +58,6 @@ public class ResultEntryServlet extends HttpServlet {
         {
             SQLScripts sqlScripts = new SQLScripts();
             courseModules = sqlScripts.getStaffModules(userID);
-            students = sqlScripts.getStudentsOnModule(userID);
         }
         request.setAttribute("courseModules", courseModules);
         request.getRequestDispatcher("/resultEntry.jsp").forward(request, response);

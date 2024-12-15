@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 @WebServlet(name = "ModuleSelectServlet", value = "/ModuleSelectServlet")
 public class ModuleSelectServlet extends HttpServlet {
-    DBType dbType = DBType.MONGO;
+    DBType dbType = DBType.SQL;
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 

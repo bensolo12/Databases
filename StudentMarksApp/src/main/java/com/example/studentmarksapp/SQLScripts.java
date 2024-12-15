@@ -280,7 +280,7 @@ public class SQLScripts {
     }
 
     public void addStudentModule(int studentID, int moduleID) {
-        String addStudentModuleSQL = "INSERT INTO Students_Modules (USER_ID, MODULE_ID, MODULE_YEAR) VALUES (?, ?, ?)";
+        String addStudentModuleSQL = "INSERT INTO Students_Modules (STUDENTS, MODULE_ID, MODULE_YEAR) VALUES (?, ?, ?)";
         int year = Year.now().getValue();
         try (Connection connection = ConnectDB();
              PreparedStatement preparedStatement = connection.prepareStatement(addStudentModuleSQL)) {
@@ -295,24 +295,37 @@ public class SQLScripts {
 
 
     //NOT TESTED
-    public ArrayList<String> getStaffModules(int staffID){
+    public ArrayList<String> getStaffModules(int staffID) {
         Gson gson = new Gson();
         ArrayList<String> modules = new ArrayList<>();
-        String getModulesString = "SELECT MODULES.* FROM MODULES WHERE MODULE_TEACHER = ?";
+        String getModulesString = """
+        SELECT MODULES.MODULE_ID, MODULE_NAME, MODULE_TEACHER, STUDENTS_MODULES.STUDENTS 
+        FROM MODULES 
+        LEFT JOIN STUDENTS_MODULES ON MODULES.MODULE_ID = STUDENTS_MODULES.MODULE_ID 
+        WHERE MODULE_TEACHER = ?
+    """;
         try (Connection connection = ConnectDB();
              PreparedStatement statement = connection.prepareStatement(getModulesString)) {
             statement.setInt(1, staffID);
             ResultSet resultSet = statement.executeQuery();
-            ResultSetMetaData metaData = resultSet.getMetaData();
-            int columnCount = metaData.getColumnCount();
-            //Converts the data from the result set into json readable by the front end
+            Map<Integer, Map<String, Object>> moduleMap = new HashMap<>();
             while (resultSet.next()) {
-                Map<String, Object> row = new HashMap<>();
-                for (int i = 1; i <= columnCount; i++) {
-                    row.put(metaData.getColumnName(i).toLowerCase(), resultSet.getObject(i));
+                int moduleId = resultSet.getInt("MODULE_ID");
+                if (!moduleMap.containsKey(moduleId)) {
+                    Map<String, Object> module = new HashMap<>();
+                    module.put("module_id", moduleId);
+                    module.put("module_name", resultSet.getString("MODULE_NAME"));
+                    module.put("module_teacher", resultSet.getInt("MODULE_TEACHER"));
+                    module.put("students", new ArrayList<Integer>());
+                    moduleMap.put(moduleId, module);
                 }
-                // Convert the map to JSON and add it to the list
-                modules.add(gson.toJson(row));
+                int studentId = resultSet.getInt("STUDENTS");
+                if (studentId != 0) {
+                    ((ArrayList<Integer>) moduleMap.get(moduleId).get("students")).add(studentId);
+                }
+            }
+            for (Map<String, Object> module : moduleMap.values()) {
+                modules.add(gson.toJson(module));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -357,7 +370,7 @@ public class SQLScripts {
 
     //NOT TESTED
     public void addStudentResult(int studentID, int moduleID, int result){
-        String addResultString = "UPDATE STUDENTS_MODULES SET STUDENT_RESULT = ? WHERE USER_ID = ? AND MODULE_ID = ?";
+        String addResultString = "UPDATE STUDENTS_MODULES SET STUDENT_RESULT = ? WHERE STUDENTS = ? AND MODULE_ID = ?";
         try (Connection connection = ConnectDB();
              PreparedStatement statement = connection.prepareStatement(addResultString)) {
             statement.setInt(1, result);
@@ -371,13 +384,13 @@ public class SQLScripts {
 
     public ArrayList<Integer> getStudentsOnModule(int moduleID) {
         ArrayList<Integer> students = new ArrayList<>();
-        String getStudentsString = "SELECT USER_ID FROM STUDENTS_MODULES WHERE MODULE_ID = ?";
+        String getStudentsString = "SELECT STUDENTS FROM STUDENTS_MODULES WHERE MODULE_ID = ?";
         try (Connection connection = ConnectDB();
              PreparedStatement statement = connection.prepareStatement(getStudentsString)) {
             statement.setInt(1, moduleID);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                students.add(resultSet.getInt("USER_ID"));
+                students.add(resultSet.getInt("STUDENTS"));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
