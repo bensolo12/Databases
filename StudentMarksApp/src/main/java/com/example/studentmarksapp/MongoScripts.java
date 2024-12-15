@@ -263,12 +263,12 @@ public class MongoScripts {
     }
 
     public ArrayList<String> getAllStudents() {
-        // Get all students from the users collection
+        // Get all students from the users collection who are enrolled
         ArrayList<String> studentList = new ArrayList<>();
         MongoClient mongo = MongoClients.create();
         MongoDatabase db = mongo.getDatabase("StudentMarks");
         MongoCollection<Document> users = db.getCollection("Users");
-        users.find(new Document("user_id", new Document("$regex", "^1"))).forEach((Block<? super Document>) (Document student) -> {
+        users.find(new Document("enrolled", "Y")).forEach((Block<? super Document>) (Document student) -> {
             studentList.add(student.toJson());
         });
         return studentList;
