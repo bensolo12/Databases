@@ -441,4 +441,30 @@ public class SQLScripts {
         }
         return moduleGrades;
     }
+
+    public int calculatePasses(int courseID) {
+        int passCount = 0;
+        String getModulesString = "SELECT MODULE_ID FROM MODULES WHERE COURSE_ID = ?";
+        try (Connection connection = ConnectDB();
+             PreparedStatement statement = connection.prepareStatement(getModulesString)) {
+            statement.setInt(1, courseID);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int moduleID = resultSet.getInt("MODULE_ID");
+                String getResultsString = "SELECT STUDENT_RESULT FROM STUDENTS_MODULES WHERE MODULE_ID = ?";
+                try (PreparedStatement statement2 = connection.prepareStatement(getResultsString)) {
+                    statement2.setInt(1, moduleID);
+                    ResultSet resultSet2 = statement2.executeQuery();
+                    while (resultSet2.next()) {
+                        if (resultSet2.getInt("STUDENT_RESULT") >= 40) {
+                            passCount++;
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return passCount;
+    }
 }

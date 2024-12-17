@@ -222,7 +222,11 @@
           form.submit();
         }
         else if (itemId === "grid-item3"){
-            window.location.href = "courses.jsp";
+          var form = document.createElement("form");
+          form.method = "post";
+          form.action = "${pageContext.request.contextPath}/Course-Result-Servlet";
+          document.body.appendChild(form);
+          form.submit();
         }
         else if (itemId === "grid-item4"){
             window.location.href = "timetable.jsp";

@@ -7,7 +7,7 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class MongoScripts {
@@ -94,13 +94,17 @@ public class MongoScripts {
         modules.addAll(Arrays.asList(module1, module2, module3, module4, module5, module6, module7, module8, module9));
         collection.insertMany(modules);
     }
-    public static ArrayList<String> getCourses()
+    public static ArrayList<Integer> getCourses()
     {
         try {
             MongoClient mongo = MongoClients.create();
             MongoDatabase db = mongo.getDatabase("StudentMarks");
             MongoCollection<Document> courses = db.getCollection("Course");
-            return courses.distinct("course_name", String.class).into(new ArrayList<>());
+            ArrayList<Integer> courseList = new ArrayList<>();
+            courses.find().forEach((Block<? super Document>) (Document course) -> {
+                courseList.add(course.getInteger("course_id"));
+            });
+            return courseList;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -284,5 +288,44 @@ public class MongoScripts {
             moduleGrades.add(moduleGrade.toJson());
         });
         return moduleGrades;
+    }
+
+    //for each student that's enrolled get their course and
+    // all of their module grades from results tables and average them
+
+    private ArrayList<Integer> getEnrolledStudents(){
+        ArrayList<Integer> enrolledStudents = new ArrayList<>();
+        MongoClient mongo = MongoClients.create();
+        MongoDatabase db = mongo.getDatabase("StudentMarks");
+        MongoCollection<Document> students = db.getCollection("Users");
+        students.find(new Document("enrolled", "Y")).forEach((Block<? super Document>) (Document student) -> {
+            enrolledStudents.add(student.getInteger("user_id"));
+        });
+        return enrolledStudents;
+    }
+
+    public Integer calculatePasses(int courseID){
+        int allStudentGrades = 0;
+        for (int student : getEnrolledStudents()){
+            ArrayList<Integer> studentGrades = new ArrayList<>();
+            AtomicReference<String> studentID = new AtomicReference<>("");
+            MongoClient mongo = MongoClients.create();
+            MongoDatabase db = mongo.getDatabase("StudentMarks");
+            MongoCollection<Document> results = db.getCollection("Results");
+            results.find(new Document("students", student)).forEach((Block<? super Document>) (Document studentGrade) -> {
+                studentID.set(String.valueOf(studentGrade.getInteger("students")));
+                studentGrades.add(studentGrade.getInteger("student_result"));
+            });
+            int total = 0;
+            for (int grade : studentGrades){
+                total += grade;
+            }
+            int average = total / studentGrades.size();
+            int userCourseID = getUserCourseID(Integer.parseInt(String.valueOf(studentID)));
+            if (average > 40 && userCourseID == courseID){
+                allStudentGrades += 1;;
+            }
+        }
+        return allStudentGrades;
     }
 }

@@ -44,4 +44,12 @@
     <servlet-name>StudentResultServlet</servlet-name>
     <url-pattern>/Student-Result-Servlet</url-pattern>
 </servlet-mapping>
+<servlet>
+    <servlet-name>CourseResultsServlet</servlet-name>
+    <servlet-class>com.example.studentmarksapp.CourseResultsServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>CourseResultsServlet</servlet-name>
+    <url-pattern>/Course-Result-Servlet</url-pattern>
+</servlet-mapping>
 </web-app>

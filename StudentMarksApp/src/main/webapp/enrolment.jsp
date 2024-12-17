@@ -18,6 +18,7 @@
         <div class="course-selection">
             <h3>Course Selection</h3>
             <ul id="course-list">
+                <%--TODO: These courses shouldn't be hard coded--%>
                 <li id="course1" onclick="updateModules('Computer Science')">Course 1</li>
                 <li id="course2" onclick="updateModules('Cyber Security')">Course 2</li>
                 <li id="course3" onclick="updateModules('Cyber Forensics')">Course 3</li>
