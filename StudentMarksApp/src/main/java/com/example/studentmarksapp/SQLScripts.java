@@ -39,14 +39,14 @@ public class SQLScripts {
         }
     }
 
-    public ArrayList<String> getCourses() {
-        ArrayList<String> courses = new ArrayList<>();
-        String getCoursesString = "SELECT COURSE_NAME FROM COURSE";
+    public ArrayList<Integer> getCourses() {
+        ArrayList<Integer> courses = new ArrayList<>();
+        String getCoursesString = "SELECT COURSE_ID FROM COURSE";
         try (Connection connection = ConnectDB();
              PreparedStatement statement = connection.prepareStatement(getCoursesString)) {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                courses.add(resultSet.getString("COURSE_NAME"));
+                courses.add(resultSet.getInt("COURSE_ID"));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

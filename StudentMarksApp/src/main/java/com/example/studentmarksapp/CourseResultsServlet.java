@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 @WebServlet(name = "CourseResultsServlet", value = "/CourseResultsServlet")
 public class CourseResultsServlet extends HttpServlet {
-    DBType dbType = DBType.MONGO;
+    DBType dbType = DBType.SQL;
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -30,7 +30,7 @@ public class CourseResultsServlet extends HttpServlet {
 
         } else {
             SQLScripts sqlScripts = new SQLScripts();
-            //courses = sqlScripts.getCourses();
+            courses = sqlScripts.getCourses();
         }
         assert courses != null;
         for(int course : courses){

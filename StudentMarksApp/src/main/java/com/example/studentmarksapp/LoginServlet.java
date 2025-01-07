@@ -16,17 +16,19 @@ import org.bson.Document;
 
 import static com.mongodb.client.model.Filters.eq;
 
+//The different types of databases to switch more easily
 enum DBType {
     MONGO, SQL
 }
 
+//The different types of users
 enum UserType {
     STUDENT, TEACHER, ADMIN
 }
 
 @WebServlet(name = "loginServlet", value = "/login-servlet")
 public class LoginServlet extends HttpServlet {
-    public DBType dbType = DBType.MONGO;
+    public DBType dbType = DBType.SQL;
     public HttpSession session;
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
