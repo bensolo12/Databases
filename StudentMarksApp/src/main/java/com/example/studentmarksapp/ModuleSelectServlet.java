@@ -23,7 +23,8 @@ public class ModuleSelectServlet extends HttpServlet {
         if (request.getParameter("selectedModules") != null) {
             enterStudentModules(userID, request.getParameter("selectedModules"));
         }
-        ArrayList<String> courseModules = new ArrayList<>();
+        ArrayList<String> courseModules;
+        // Get the modules for the course the student is enrolled in
         if (dbType.equals(DBType.MONGO)) {
             MongoScripts mongoScripts = new MongoScripts();
             int course = mongoScripts.getUserCourseID(userID);
@@ -34,11 +35,11 @@ public class ModuleSelectServlet extends HttpServlet {
             courseModules = sqlScripts.getModules(course);
 
         }
-
         request.setAttribute("courseModules", courseModules);
         request.getRequestDispatcher("/moduleSelect.jsp").forward(request, response);
     }
 
+    // Add the modules to the student's record
     private void enterStudentModules(int studentID, String modules)
     {
         String[] moduleArray = modules.split(",");

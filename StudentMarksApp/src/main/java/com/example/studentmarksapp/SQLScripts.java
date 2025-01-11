@@ -17,6 +17,7 @@ public class SQLScripts {
 
     Gson gson = new Gson();
 
+    // Connect to the Oracle database
     public Connection ConnectDB() {
         createOracleSchema();
         String url = "jdbc:oracle:thin:@//oracle.glos.ac.uk:1521/orclpdb.chelt.local";
@@ -29,17 +30,7 @@ public class SQLScripts {
         }
     }
 
-    public boolean checkIfTableExists(String tableName) {
-        String checkTableSQL = "SELECT * FROM " + tableName + " WHERE ROWNUM = 1";
-        try (Connection connection = ConnectDB();
-             PreparedStatement statement = connection.prepareStatement(checkTableSQL)) {
-            ResultSet resultSet = statement.executeQuery();
-            return resultSet.next();
-        } catch (SQLException e) {
-            return false;
-        }
-    }
-
+    // Get all courses from the database
     public ArrayList<Integer> getCourses() {
         ArrayList<Integer> courses = new ArrayList<>();
         String getCoursesString = "SELECT COURSE_ID FROM COURSE";
@@ -55,6 +46,7 @@ public class SQLScripts {
         return courses;
     }
 
+    // Get all modules from the database
     public ArrayList<String> getModules() {
         Gson gson = new Gson();
         ArrayList<String> modules = new ArrayList<>();
@@ -79,6 +71,7 @@ public class SQLScripts {
         return modules;
     }
 
+    // Get all modules for a specific course
     public ArrayList<String> getModules(int courseID) {
         Gson gson = new Gson();
         ArrayList<String> modules = new ArrayList<>();
@@ -143,6 +136,7 @@ public class SQLScripts {
                 module_teacher INT,
                 course_id INT,
                 module_CATS INT,
+                optional CHAR(1) CHECK (optional IN ('Y', 'N')),
                 FOREIGN KEY (module_teacher) REFERENCES Users(user_id),
                 FOREIGN KEY (course_id) REFERENCES Course(course_id)
             )
@@ -152,12 +146,12 @@ public class SQLScripts {
             // Create "Students_Modules" table
             String createStudentsModulesTable = """
             CREATE TABLE Students_Modules (
-                user_id INT NOT NULL,
+                students INT NOT NULL,
                 module_id INT NOT NULL,
-                module_year DATE,
+                module_year INT,
                 student_result INT,
-                PRIMARY KEY (user_id, module_id),
-                FOREIGN KEY (user_id) REFERENCES Users(user_id),
+                PRIMARY KEY (students, module_id),
+                FOREIGN KEY (students) REFERENCES Users(user_id),
                 FOREIGN KEY (module_id) REFERENCES Modules(module_id)
             )
         """;
@@ -166,7 +160,7 @@ public class SQLScripts {
             CREATE TABLE Students_Courses (
                 user_id INT NOT NULL,
                 course_id INT NOT NULL,
-                course_year DATE,
+                course_year INT,
                 student_result INT,
                 PRIMARY KEY (user_id, course_id),
                 FOREIGN KEY (user_id) REFERENCES Users(user_id),
@@ -182,7 +176,7 @@ public class SQLScripts {
         }
     }
 
-
+    // Check what type of user is logged in
     public String checkUserType(String username) {
         String checkUserTypeSQL = "SELECT USER_ID FROM Users WHERE FIRST_NAME = ?";
         try (Connection connection = ConnectDB();
@@ -199,6 +193,7 @@ public class SQLScripts {
         }
     }
 
+    // Get course ID from course name
     public int getCourseIDFromName(String course) {
         String courseIDSQL = "SELECT COURSE_ID FROM COURSE WHERE COURSE_NAME = ?";
         try (Connection connection = ConnectDB();
@@ -213,6 +208,7 @@ public class SQLScripts {
         }
         return 0;
     }
+    // Get course name from course ID
     public ArrayList<String> getCourseNamesFromID(ArrayList<Integer> courseIDs){
         ArrayList<String> courseNames = new ArrayList<>();
         String courseNameSQL = "SELECT COURSE_NAME FROM COURSE WHERE COURSE_ID = ?";
@@ -231,6 +227,7 @@ public class SQLScripts {
         return courseNames;
     }
 
+    // Check if a student is enrolled in a course
     public boolean checkStudentIsEnrolled(String userID) {
         String checkEnrolledSQL = "SELECT ENROLLED FROM Users WHERE USER_ID = ?";
         try (Connection connection = ConnectDB();
@@ -246,6 +243,7 @@ public class SQLScripts {
         return false;
     }
 
+    // Enrol a student in a course
     public void enrolStudent(String course, String userID) {
         // Enrol the student in the course
         int courseID = getCourseIDFromName(course);
@@ -267,21 +265,7 @@ public class SQLScripts {
         }
     }
 
-    public String getUserCourse(int userID) {
-        String getUserCourseSQL = "SELECT COURSE_ID FROM COURSE WHERE COURSE_ID = (SELECT COURSE_ID FROM STUDENTS_COURSES WHERE USER_ID = ?)";
-        try (Connection connection = ConnectDB();
-             PreparedStatement preparedStatement = connection.prepareStatement(getUserCourseSQL)) {
-            preparedStatement.setInt(1, (int) userID);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getString("COURSE_NAME");
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return null;
-    }
-
+    // Get the course ID of a user
     public int getUserCourseID(int userID) {
         String getUserCourseSQL = "SELECT COURSE_ID FROM COURSE WHERE COURSE_ID = (SELECT COURSE_ID FROM STUDENTS_COURSES WHERE USER_ID = ?)";
         try (Connection connection = ConnectDB();
@@ -297,6 +281,7 @@ public class SQLScripts {
         return 0;
     }
 
+    // Add a student module
     public void addStudentModule(int studentID, int moduleID) {
         String addStudentModuleSQL = "INSERT INTO Students_Modules (STUDENTS, MODULE_ID, MODULE_YEAR) VALUES (?, ?, ?)";
         int year = Year.now().getValue();
@@ -311,8 +296,7 @@ public class SQLScripts {
         }
     }
 
-
-    //NOT TESTED
+    // Get all modules a staff member is teaching
     public ArrayList<String> getStaffModules(int staffID) {
         Gson gson = new Gson();
         ArrayList<String> modules = new ArrayList<>();
@@ -351,42 +335,7 @@ public class SQLScripts {
         return modules;
     }
 
-    //NOT TESTED
-    public ArrayList<Integer> getStaffModulesID(int staffID) {
-        ArrayList<Integer> modules = new ArrayList<>();
-        String getModulesString = "SELECT MODULES.MODULE_ID FROM MODULES WHERE MODULE_TEACHER = ?";
-        try (Connection connection = ConnectDB();
-             PreparedStatement statement = connection.prepareStatement(getModulesString)) {
-            statement.setInt(1, staffID);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                modules.add(resultSet.getInt("MODULE_ID"));
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return modules;
-    }
-
-    //NOT TESTED
-    public ArrayList<String> getStudentResults(int studentID, int moduleID){
-        ArrayList<String> results = new ArrayList<>();
-        String getResultsString = "SELECT STUDENT_RESULT FROM STUDENTS_MODULES WHERE USER_ID = ? AND MODULE_ID = ?";
-        try (Connection connection = ConnectDB();
-             PreparedStatement statement = connection.prepareStatement(getResultsString)) {
-            statement.setInt(1, studentID);
-            statement.setInt(2, moduleID);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                results.add(resultSet.getString("STUDENT_RESULT"));
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return results;
-    }
-
-    //NOT TESTED
+    // Add a student result
     public void addStudentResult(int studentID, int moduleID, int result){
         String addResultString = "UPDATE STUDENTS_MODULES SET STUDENT_RESULT = ? WHERE STUDENTS = ? AND MODULE_ID = ?";
         try (Connection connection = ConnectDB();
@@ -400,22 +349,7 @@ public class SQLScripts {
         }
     }
 
-    public ArrayList<Integer> getStudentsOnModule(int moduleID) {
-        ArrayList<Integer> students = new ArrayList<>();
-        String getStudentsString = "SELECT STUDENTS FROM STUDENTS_MODULES WHERE MODULE_ID = ?";
-        try (Connection connection = ConnectDB();
-             PreparedStatement statement = connection.prepareStatement(getStudentsString)) {
-            statement.setInt(1, moduleID);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                students.add(resultSet.getInt("STUDENTS"));
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return students;
-    }
-
+    // Get all students
     public ArrayList<String> getAllStudents() {
         Gson gson = new Gson();
         ArrayList<String> students = new ArrayList<>();
@@ -438,6 +372,7 @@ public class SQLScripts {
         return students;
     }
 
+    //Get all module grades
     public ArrayList<String> getModuleGrades() {
         Gson gson = new Gson();
         ArrayList<String> moduleGrades = new ArrayList<>();
@@ -460,6 +395,7 @@ public class SQLScripts {
         return moduleGrades;
     }
 
+    // Calculate the number of passes for a course
     public int calculatePasses(int courseID) {
         int passCount = 0;
         String getModulesString = "SELECT MODULE_ID FROM MODULES WHERE COURSE_ID = ?";

@@ -28,6 +28,7 @@ public class EnrolmentServlet extends HttpServlet {
         ArrayList<String> modules;
         DBType dbType = ConfigUtil.getDbType();
 
+        // Get the course names and modules
         if (dbType == DBType.SQL){
             courses = sqlScripts.getCourseNamesFromID(sqlScripts.getCourses());
             modules = sqlScripts.getModules();
@@ -37,14 +38,12 @@ public class EnrolmentServlet extends HttpServlet {
             modules = MongoScripts.getModules();
         }
 
-        Gson gson = new Gson();
-        String coursesJson = gson.toJson(courses);
-        String modulesJson = gson.toJson(modules);
         request.setAttribute("courses", courses);
         request.setAttribute("modules", modules);
         request.setAttribute("userID", userID);
         request.getRequestDispatcher("/enrolment.jsp").forward(request, response);
         try{
+            // Check if the course is empty to see if the user has already selected a course
             if (request.getParameter("course").isEmpty()){
                 request.getRequestDispatcher("/enrolment.jsp").forward(request, response);
             }

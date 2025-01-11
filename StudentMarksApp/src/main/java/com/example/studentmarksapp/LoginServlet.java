@@ -47,13 +47,11 @@ public class LoginServlet extends HttpServlet {
         }
         catch (NullPointerException e){}
         try {
+            // If the user is already logged in, redirect to the index page
             if (checkLogin(username, password)) {
-                //createMongoSchema();
                 UserType userType = getUserType(username);
                 request.setAttribute("userName", username);
                 request.setAttribute("userType", userType.toString());
-                //request.setAttribute("userID", userID);
-                //request.setAttribute("userCourse", getUserCourse(userID));
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
             } else {
                 PrintWriter out = response.getWriter();
@@ -64,32 +62,10 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
-    private String getUserCourse(int userID) {
-        if (dbType == DBType.MONGO) {
-            MongoClient mongo = MongoClients.create();
-            MongoDatabase db = mongo.getDatabase("StudentMarks");
-            MongoCollection<Document> users = db.getCollection("Users");
-            Document user = users.find(eq("user_id", Integer.parseInt(String.valueOf(userID)))).first();
-            return (String) user.get("course");
-        } else {
-            SQLScripts db = new SQLScripts();
-            return db.getUserCourse((Integer) userID);
-        }
-    }
-
-    private void createMongoSchema(){
-        MongoClient mongo = MongoClients.create();
-        MongoDatabase db = mongo.getDatabase("StudentMarks");
-        MongoCollection<Document> check = db.getCollection("Course");
-        if (check.countDocuments() < 0) {
-            MongoScripts mongoScripts = new MongoScripts();
-            mongoScripts.createMongoSchema();
-        }
-    }
-
     private UserType getUserType(String username) {
         UserType userType;
         String userID = "";
+        // Check the user type - the mongo section of this should be in MongoScripts.java
         if (dbType == DBType.MONGO) {
             MongoClient mongo = MongoClients.create();
             MongoDatabase db = mongo.getDatabase("StudentMarks");
@@ -117,6 +93,7 @@ public class LoginServlet extends HttpServlet {
     }
 
     public boolean checkLogin(String username, String password) throws SQLException {
+        // Check the login - the mongo section of this should be in MongoScripts.java and the SQL section in SQLScripts.java
         if (dbType == DBType.MONGO) {
             MongoClient mongo = MongoClients.create();
             MongoDatabase db = mongo.getDatabase("StudentMarks");

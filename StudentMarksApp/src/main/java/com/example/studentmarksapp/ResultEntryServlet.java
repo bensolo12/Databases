@@ -1,16 +1,9 @@
 package com.example.studentmarksapp;
-
-import com.google.gson.Gson;
-import com.mongodb.util.JSON;
-import jakarta.json.Json;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
-
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,7 +14,7 @@ public class ResultEntryServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
     }
-
+    // The servlet is for entering student results
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -29,7 +22,10 @@ public class ResultEntryServlet extends HttpServlet {
         int userID = Integer.parseInt((String) session.getAttribute("userID"));
         String studentGrades = request.getParameter("studentGrades");
         try {
+            // Check if the studentGrades parameter is not null to tell if the user has entered any grades yet
             if (studentGrades != null) {
+                // REGEX to extract the moduleID, studentID and grade from the JSON string
+                // This needed doing as the JSON string was not being parsed correctly
                 Pattern pattern = Pattern.compile("\\{\"moduleID\":(\\d+),\"studentID\":\"(\\d+)\",\"grade\":\"(\\d+)\"\\}");
                 Matcher matcher = pattern.matcher(studentGrades);
                 while (matcher.find()) {
@@ -44,9 +40,9 @@ public class ResultEntryServlet extends HttpServlet {
         {
             e.printStackTrace();
         }
+        ArrayList<String> courseModules;
 
-        ArrayList<String> courseModules = new ArrayList<>();
-
+        // Get the modules for the course the staff member is teaching
         if (dbType == DBType.MONGO) {
             MongoScripts mongoScripts = new MongoScripts();
             courseModules = mongoScripts.getStaffModules(userID);

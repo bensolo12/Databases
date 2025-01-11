@@ -1,17 +1,12 @@
 package com.example.studentmarksapp;
-
 import com.mongodb.client.*;
-
 import org.bson.Document;
-
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.*;
-
 import static com.mongodb.client.model.Projections.fields;
 import static com.mongodb.client.model.Projections.include;
 import static com.mongodb.client.model.Sorts.descending;
@@ -23,6 +18,7 @@ public class Registration extends HttpServlet {
 
     }
 
+    // This whole servlet is not needed in the project, however it exists if a user can't access the database and needs to use the application
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html");

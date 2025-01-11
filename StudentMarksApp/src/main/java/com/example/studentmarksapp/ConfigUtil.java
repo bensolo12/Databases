@@ -8,10 +8,11 @@ import java.util.Properties;
 public class ConfigUtil {
     private static Properties properties = new Properties();
 
+    // Load the config.properties file
     static {
         try (InputStream input = ConfigUtil.class.getClassLoader().getResourceAsStream("config.properties")) {
             if (input == null) {
-                System.out.println("Sorry, unable to find config.properties");
+                System.out.println("Couldn't find config.properties");
             }
             properties.load(input);
         } catch (IOException ex) {
@@ -19,6 +20,7 @@ public class ConfigUtil {
         }
     }
 
+    // Get the database type from the config.properties file
     public static DBType getDbType() {
         String dbType = properties.getProperty("dbType");
         return DBType.valueOf(dbType);
