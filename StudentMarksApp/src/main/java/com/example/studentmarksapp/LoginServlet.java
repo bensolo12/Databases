@@ -28,7 +28,7 @@ enum UserType {
 
 @WebServlet(name = "loginServlet", value = "/login-servlet")
 public class LoginServlet extends HttpServlet {
-    public DBType dbType = DBType.SQL;
+    public DBType dbType = ConfigUtil.getDbType();
     public HttpSession session;
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {

@@ -8,10 +8,16 @@
     <style>
         .container {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
         }
-        .course-list, .course-passes {
-            width: 45%;
+        .main-content {
+            display: flex;
+            justify-content: flex-start;
+            width: 25%;
+            padding: 0;
+        }
+        table {
+            width: 25%;
         }
     </style>
 </head>
@@ -23,7 +29,7 @@
     <header>
         <h1>Course Results Page</h1>
     </header>
-    <main>
+    <main class="main-content">
         <div class="container">
             <div class="course-list">
                 <table>
@@ -37,7 +43,8 @@
                     </tbody>
                 </table>
             </div>
-
+        </div>
+        <div class="container">
             <div class="course-passes">
                 <table>
                     <thead>

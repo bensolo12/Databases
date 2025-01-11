@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 
 @WebServlet(name = "ResultEntryServlet", value = "/ResultEntryServlet")
 public class ResultEntryServlet extends HttpServlet {
-    DBType dbType = DBType.MONGO;
+    DBType dbType = ConfigUtil.getDbType();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 

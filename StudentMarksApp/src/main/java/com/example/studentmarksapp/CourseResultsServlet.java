@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 @WebServlet(name = "CourseResultsServlet", value = "/CourseResultsServlet")
 public class CourseResultsServlet extends HttpServlet {
-    DBType dbType = DBType.SQL;
+    DBType dbType = ConfigUtil.getDbType();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 

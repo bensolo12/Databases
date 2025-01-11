@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 @WebServlet(name = "StudentResultServlet", value = "/StudentResultServlet")
 public class StudentResultServlet extends HttpServlet {
-    DBType dbType = DBType.MONGO;
+    DBType dbType = ConfigUtil.getDbType();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 

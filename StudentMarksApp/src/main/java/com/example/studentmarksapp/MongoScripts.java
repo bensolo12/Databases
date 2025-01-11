@@ -1,4 +1,5 @@
 package com.example.studentmarksapp;
+import com.google.gson.Gson;
 import com.mongodb.Block;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -11,6 +12,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 
 public class MongoScripts {
+    static Gson gson = new Gson();
     public static void enrolStudent(String course, String userID) {
         try {
             MongoClient mongo = MongoClients.create();
@@ -192,7 +194,7 @@ public class MongoScripts {
             ArrayList<String> courseNames = new ArrayList<>();
             for (int courseID : courseIDs) {
                 Document course = courses.find(new Document("course_id", courseID)).first();
-                courseNames.add(course.getString("course_name"));
+                courseNames.add(gson.toJson(course.getString("course_name")));
             }
             return courseNames;
         } catch (Exception e) {
