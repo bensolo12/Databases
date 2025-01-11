@@ -1,4 +1,5 @@
-import com.example.studentmarksapp.DBScripts;
+package com.example.studentmarksapp;
+
 import com.mongodb.client.*;
 
 import org.bson.Document;
@@ -25,7 +26,7 @@ public class Registration extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html");
-
+        DBType dbType = DBType.SQL;
         //String userID = request.getParameter("userID");
         String first_name = request.getParameter("First_Name");
         String second_name = request.getParameter("Second_Name");
@@ -34,15 +35,18 @@ public class Registration extends HttpServlet {
 
         PrintWriter out = response.getWriter();
         out.println("Processing user registration ........");
-        Document customer = new Document()
+        Document user = new Document()
                 .append("user_id", getUserID())
                 .append("First_name", first_name)
                 .append("Password", password);
-        //createUserMongo(customer);
-        try {
-            createUserSQL(first_name, second_name, password, DOB);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        if (dbType == DBType.MONGO) {
+            createUserMongo(user);
+        } else {
+            try {
+                createUserSQL(first_name, second_name, password, DOB);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -54,8 +58,9 @@ public class Registration extends HttpServlet {
     }
 
     public void createUserSQL(String firstName, String secondName, String password, String DOB) throws SQLException {
-        DBScripts db = new DBScripts();
-        if (!db.checkIfTableExists()) db.createTable();
+        SQLScripts db = new SQLScripts();
+        db.createOracleSchema();
+        //if (!db.checkIfTableExists("User")) db.createTable();
 
         //Enter Registration info into user table
         String enterUserSQL = "INSERT INTO Users (USER_ID, FIRST_NAME ,Second_name, DOB, Password) VALUES (?, ?, ?, ?, ?)";
