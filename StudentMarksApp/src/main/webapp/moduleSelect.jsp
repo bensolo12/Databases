@@ -94,21 +94,26 @@
     const modules = JSON.parse('<%= request.getAttribute("courseModules") %>'); // All available modules
     let selectedModules = []; // Selected modules
     let totalCats = 0;
+    let mandatoryModules = modules.filter(module => module.optional === 'N');
+    mandatoryModules.forEach(module => selectModule(modules.indexOf(module)));
+
 
     // Render the available modules
     function renderModuleList() {
         const moduleSelection = document.getElementById('module-selection');
+
         moduleSelection.innerHTML = '';
-        modules.forEach((module, index) => {
-            //THIS IS VERY BUGGY BUT WORKS IF YOU DON'T MESS AROUND
-            if (module.optional === 'N')
-            {
-                selectModule(index)
+
+        // Render the remaining modules
+        const remainingModules = modules.filter(module => module.optional === 'Y');
+        remainingModules.forEach((module, index) => {
+            if (!isModuleSelected(module)) {
+                const row = document.createElement('tr');
+                console.log(module.module_name);
+                row.textContent = module.module_name;
+                row.addEventListener('click', () => selectModule(index + mandatoryModules.length));
+                moduleSelection.appendChild(row);
             }
-            const row = document.createElement('tr');
-            row.textContent = module.module_name;
-            row.addEventListener('click', () => selectModule(index));
-            moduleSelection.appendChild(row);
         });
     }
 
@@ -124,18 +129,21 @@
         document.getElementById('current-cats').textContent = "Current CATS:" + totalCats;
     }
 
+    function isModuleSelected(module) {
+        return selectedModules.some(selectedModule => selectedModule.module_id === module.module_id);
+    }
+
     function selectModule(index) {
         const module = modules[index];
         selectedModules.push(module);
         totalCats += module.module_cats;
-        modules.splice(index, 1);
-        renderModuleList();
         renderSelectedModules();
+        renderModuleList();
     }
 
     function deselectModule(index) {
         const module = selectedModules[index];
-        modules.push(module);
+        //modules.push(module);
         totalCats -= module.module_cats;
         selectedModules.splice(index, 1);
         renderModuleList();

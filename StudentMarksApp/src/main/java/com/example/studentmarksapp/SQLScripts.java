@@ -15,6 +15,7 @@ import static java.time.Year.now;
 
 public class SQLScripts {
 
+    Gson gson = new Gson();
 
     public Connection ConnectDB() {
         createOracleSchema();
@@ -211,6 +212,23 @@ public class SQLScripts {
             throw new RuntimeException(e);
         }
         return 0;
+    }
+    public ArrayList<String> getCourseNamesFromID(ArrayList<Integer> courseIDs){
+        ArrayList<String> courseNames = new ArrayList<>();
+        String courseNameSQL = "SELECT COURSE_NAME FROM COURSE WHERE COURSE_ID = ?";
+        try (Connection connection = ConnectDB();
+             PreparedStatement preparedStatement = connection.prepareStatement(courseNameSQL)) {
+            for (int courseID : courseIDs) {
+                preparedStatement.setInt(1, courseID);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) {
+                    courseNames.add(gson.toJson(resultSet.getString("COURSE_NAME")));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return courseNames;
     }
 
     public boolean checkStudentIsEnrolled(String userID) {

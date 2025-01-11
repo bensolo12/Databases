@@ -24,24 +24,23 @@ public class EnrolmentServlet extends HttpServlet {
         String userID = (String) session.getAttribute("userID");
 
         SQLScripts sqlScripts = new SQLScripts();
-        ArrayList<Integer> courses;
+        ArrayList<String> courses;
         ArrayList<String> modules;
         DBType dbType = DBType.SQL;
 
         if (dbType == DBType.SQL){
-            //courses = sqlScripts.getCourses();
+            courses = sqlScripts.getCourseNamesFromID(sqlScripts.getCourses());
             modules = sqlScripts.getModules();
         }
         else {
-            //TODO: This is probably broken
-            courses = MongoScripts.getCourses();
+            courses = MongoScripts.getCourseNamesFromID(MongoScripts.getCourses());
             modules = MongoScripts.getModules();
         }
 
         Gson gson = new Gson();
-        //String coursesJson = gson.toJson(courses);
+        String coursesJson = gson.toJson(courses);
         String modulesJson = gson.toJson(modules);
-        //request.setAttribute("courses", coursesJson);
+        request.setAttribute("courses", courses);
         request.setAttribute("modules", modules);
         request.setAttribute("userID", userID);
         request.getRequestDispatcher("/enrolment.jsp").forward(request, response);

@@ -184,6 +184,23 @@ public class MongoScripts {
         }
     }
 
+    public static ArrayList<String> getCourseNamesFromID(ArrayList<Integer> courseIDs) {
+        try {
+            MongoClient mongo = MongoClients.create();
+            MongoDatabase db = mongo.getDatabase("StudentMarks");
+            MongoCollection<Document> courses = db.getCollection("Course");
+            ArrayList<String> courseNames = new ArrayList<>();
+            for (int courseID : courseIDs) {
+                Document course = courses.find(new Document("course_id", courseID)).first();
+                courseNames.add(course.getString("course_name"));
+            }
+            return courseNames;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public ArrayList<String> getStaffModules(int staffID){
         // Get the modules for a staff member
         // Find the staff member in the users collection if the userID is starts with 2

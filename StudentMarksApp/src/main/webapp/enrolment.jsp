@@ -19,9 +19,9 @@
             <h3>Course Selection</h3>
             <ul id="course-list">
                 <%--TODO: These courses shouldn't be hard coded--%>
-                <li id="course1" onclick="updateModules('Computer Science')">Course 1</li>
-                <li id="course2" onclick="updateModules('Cyber Security')">Course 2</li>
-                <li id="course3" onclick="updateModules('Cyber Forensics')">Course 3</li>
+                <li id="course1" onclick="updateModules('Computer Science')"></li>
+                <li id="course2" onclick="updateModules('Cyber Security')"></li>
+                <li id="course3" onclick="updateModules('Cyber Forensics')"></li>
             </ul>
         </div>
         <div class="module-selection">
@@ -36,6 +36,7 @@
 
 function getCourseList() {
     var courseList = JSON.parse('<%= request.getAttribute("courses") %>');
+    console.log(courseList);
     for (var course of courseList) {
         console.log(course);
     }
